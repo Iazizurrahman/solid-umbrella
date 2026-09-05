@@ -30,17 +30,17 @@ type Integration =
       name: string;
       file: string;
       /**
-       * Box height in px, tuned per mark so the *ink* lands at a consistent optical
-       * height rather than the boxes lining up. Measured ink-to-box ratios (alpha
-       * bounding box over a 400px render) are recorded beside each entry: a square
-       * glyph that fills its box needs a much smaller box than a wordmark whose
-       * artboard is mostly air.
+       * Box height, tuned per mark so the *ink* lands at a consistent optical height
+       * rather than the boxes lining up. Measured ink-to-box ratios (alpha bounding box
+       * over a 400px render) are recorded beside each entry: a square glyph that fills
+       * its box needs a much smaller box than a wordmark whose artboard is mostly air.
+       * Written as a literal utility so Tailwind can see the value at build time.
        */
-      height: number;
+      height: string;
     }
   | { kind: "pill"; name: string };
 
-const logo = (name: string, file: string, height: number): Integration => ({
+const logo = (name: string, file: string, height: string): Integration => ({
   kind: "logo",
   name,
   file,
@@ -62,10 +62,10 @@ const CARDS: readonly IntegrationCard[] = [
     label: "Messaging",
     items: [
       // ink 1.000 — Meta's own monochrome glyph, artwork fills the artboard edge to edge.
-      logo("WhatsApp Business", "whatsapp.svg", 20),
+      logo("WhatsApp Business", "whatsapp.svg", "h-[20px]"),
       pill("voice notes"),
       // ink 0.695 — the M sits in a 96px square with generous padding.
-      logo("Gmail", "gmail.png", 25),
+      logo("Gmail", "gmail.png", "h-[25px]"),
       // Outlook's only official artwork is the full-colour envelope; it collapses to an
       // unreadable slab in monochrome and Microsoft publishes no mono variant, so it
       // takes a pill rather than a broken mark.
@@ -84,18 +84,20 @@ const CARDS: readonly IntegrationCard[] = [
     items: [
       pill("SAP"),
       pill("Oracle"),
-      // ink 1.000 — the D365 swoosh fills its 96px artboard.
-      logo("Dynamics 365", "dynamics-365.svg", 19),
+      // ink 1.000 — the D365 swoosh fills its 96px artboard, but only 0.835 of its width,
+      // so it needs a slightly taller box than the round WhatsApp mark to weigh the same.
+      logo("Dynamics 365", "dynamics-365.svg", "h-[22px]"),
       pill("NetSuite"),
       // ink 0.398 — an all-lowercase wordmark with no ascenders on a tall artboard.
-      logo("Odoo", "odoo.svg", 32),
+      logo("Odoo", "odoo.svg", "h-[32px]"),
       // ink 1.000 — script wordmark plus the "power of simplicity" tagline lockup.
-      logo("Tally", "tally.svg", 26),
-      // ink 0.965 — four-square mark with the wordmark tucked underneath.
-      logo("Zoho", "zoho.svg", 24),
+      logo("Tally", "tally.svg", "h-[26px]"),
+      // ink 0.965 — Zoho's official white-on-dark cut. The four "petti" boxes are outlines
+      // by design and the wordmark sits under them, so this one runs a little taller.
+      logo("Zoho", "zoho-white.svg", "h-[26px]"),
       pill("in-house ERP"),
       // ink 0.345 — a very wide all-caps wordmark; the white cut ships ready to use.
-      logo("FastReactPlan", "fastreact.webp", 28),
+      logo("FastReactPlan", "fastreact.webp", "h-[28px]"),
     ],
   },
   {
@@ -149,7 +151,7 @@ function Pill({ name }: { name: string }) {
  * what ships in `whatsapp.svg`. Nothing is being recoloured — a colourless mark is
  * simply being given a colour, which is the variant's whole purpose.
  */
-function LogoMark({ name, file, height }: { name: string; file: string; height: number }) {
+function LogoMark({ name, file, height }: { name: string; file: string; height: string }) {
   return (
     /* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand artwork,
        mostly SVG; next/image cannot optimise SVG and its wrapper would fight the
@@ -160,8 +162,10 @@ function LogoMark({ name, file, height }: { name: string; file: string; height: 
       title={name}
       loading="lazy"
       decoding="async"
-      style={{ height: `${height}px` }}
-      className="w-auto opacity-60 [filter:brightness(0)_invert(1)] transition-opacity duration-200 group-hover/wall:opacity-60 hover:opacity-100"
+      className={cn(
+        "w-auto opacity-60 [filter:brightness(0)_invert(1)] transition-opacity duration-200 hover:opacity-100",
+        height,
+      )}
     />
   );
 }
@@ -241,7 +245,7 @@ export function TrustedLogosSection() {
                     lang="mul"
                     className="font-[family-name:var(--font-dm-sans),var(--font-noto-tamil),var(--font-noto-devanagari)] text-[0.875rem] leading-[1.5rem] text-ns-content-secondary"
                   >
-                    தமிழ் · हिन्दी · English
+                    {card.caption}
                   </p>
                 ) : null}
               </div>
