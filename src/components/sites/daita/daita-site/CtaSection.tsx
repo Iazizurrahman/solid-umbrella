@@ -1,4 +1,4 @@
-import { ASSETS, CTA } from "@/components/sites/daita/shared/brand";
+import { CTA, MEDIA } from "@/components/sites/daita/shared/brand";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
@@ -62,15 +62,14 @@ export function CtaSection() {
       <SectionLines />
 
       {/*
-        TODO: this section applies no darkening of its own. The two backdrops it replaced
-        were pre-darkened `.avif` files, so no scrim, overlay or tint has ever existed
-        here to inherit. `sand-3.jpg` therefore has to ship already darkened, or a scrim
-        must be added as a deliberate design decision — not invented here.
+        No darkening is applied here by design: both backdrops are the original
+        pre-darkened `.avif` artwork, which carries its own tone. No scrim, overlay
+        or tint has ever existed on this section to inherit.
       */}
       {/* eslint-disable-next-line @next/next/no-img-element -- mirrors the source's
           two-<img> desktop/mobile swap. */}
       <img
-        src={ASSETS.floor}
+        src={MEDIA.ctaBackgroundDesktop}
         alt=""
         width={1440}
         height={480}
@@ -79,7 +78,7 @@ export function CtaSection() {
       />
       {/* eslint-disable-next-line @next/next/no-img-element -- see above. */}
       <img
-        src={ASSETS.floor}
+        src={MEDIA.ctaBackgroundMobile}
         alt=""
         width={1500}
         height={1920}

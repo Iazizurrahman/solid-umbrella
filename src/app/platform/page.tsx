@@ -11,7 +11,7 @@ import { CtaSection } from "@/components/sites/daita/daita-site/CtaSection";
 import { SiteFooter } from "@/components/sites/daita/daita-site/SiteFooter";
 import { SectionSeparator } from "@/components/sites/daita/shared/layout";
 import { Anchor } from "@/components/sites/daita/shared/Anchor";
-import { ASSETS, CTA } from "@/components/sites/daita/shared/brand";
+import { CTA, MEDIA } from "@/components/sites/daita/shared/brand";
 import type { StackLayer } from "@/components/sites/daita/daita-site/PlatformStackSection";
 import type { StackSlide } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
 import type { InfrastructureCard } from "@/components/sites/daita/daita-site/InfrastructureSection";
@@ -215,16 +215,18 @@ const PRODUCT_SUBHEADING = "Six screens your merchandisers live in.";
  * The same six screens in the <992px carousel's shape, derived rather than
  * retyped so the two breakpoints can never drift: the desktop card's `bullets`
  * become the mobile accordion rows ({lead, text} -> {label, body}) and the whole
- * card link becomes the slide's ghost CTA. Every slide uses the section still,
- * as the homepage carousel does — there is no per-screen artwork yet. The
+ * card link becomes the slide's ghost CTA. Slides reuse the restored per-layer
+ * stills by position; the artboard ships four, so screens 5-6 fall back to the last
+ * one rather than 404ing. The
  * `visual` record lines have no slot in the mobile panel and are desktop-only.
  */
 const PRODUCT_SLIDES: readonly StackSlide[] = PRODUCT_SCREENS.map(
-  (screen): StackSlide => ({
+  (screen, i): StackSlide => ({
     id: screen.id,
     title: screen.title,
     description: screen.description,
-    image: ASSETS.floor,
+    image:
+      MEDIA.stackLayers[i] ?? MEDIA.stackLayers[MEDIA.stackLayers.length - 1],
     rows: screen.bullets.map((bullet) => ({
       label: bullet.lead,
       body: bullet.text,
@@ -293,7 +295,7 @@ export default function PlatformPage() {
           primaryCta={CTA}
           secondaryCta={null}
           variant="image"
-          media={{ src: ASSETS.floor, alt: "" }}
+          media={{ src: MEDIA.sectionStill, alt: "" }}
         />
         <SectionSeparator />
 
@@ -332,6 +334,9 @@ export default function PlatformPage() {
             heading="Your rules. Your AI."
             subheading="Write your production SOPs in plain English. DAITA follows them exactly, escalating, responding and prioritising the way your team already works."
             cards={RULES_POINTS}
+            // This page renders the section twice. Films are matched to cards by
+            // position, so without an offset both blocks would play the same three.
+            videos={MEDIA.sectionVideos.slice(2)}
           />
           <SectionSeparator />
           <GuidelinesSection />

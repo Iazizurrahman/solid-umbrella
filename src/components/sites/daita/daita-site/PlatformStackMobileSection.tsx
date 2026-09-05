@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import Image from "next/image";
-import { ASSETS, CTA, SECONDARY_CTA } from "@/components/sites/daita/shared/brand";
+import { CTA, MEDIA, SECONDARY_CTA } from "@/components/sites/daita/shared/brand";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 import {
@@ -77,13 +77,25 @@ export interface StackSlideCta {
 
 export interface StackSlide extends PlatformLayer {
   /**
-   * `.services-slider_image` — one 1340x1822 still per slide. There is no
-   * per-capability DAITA artwork yet, so every slot points at the section
-   * still; the wrapper, intrinsic ratio and classes are unchanged.
+   * `.services-slider_image` — one 1340x1822 still per slide, taken from
+   * `MEDIA.stackLayers` BY SLIDE POSITION so the carousel matches the desktop
+   * Rive canvas layer for layer: slide 0 -> `stackLayers[0]`, and so on. The
+   * artboard ships four stills, so a longer deck (`/platform` runs six) reuses
+   * the last one rather than pointing at a file that does not exist — see
+   * `stillForSlide`. The wrapper, intrinsic ratio and classes are unchanged.
    */
   image: string;
   rows: StackSlideRow[];
   ctas: StackSlideCta[];
+}
+
+/**
+ * The still for slide `index`, clamped to the last of the four so decks longer
+ * than the artboard's layer count degrade instead of 404ing.
+ */
+export function stillForSlide(index: number): string {
+  const stills = MEDIA.stackLayers;
+  return stills[Math.min(Math.max(index, 0), stills.length - 1)];
 }
 
 /** `.services-slider_top-wrap` solid button — label plus destination. */
@@ -113,7 +125,7 @@ export const HOMEPAGE_STACK_SLIDES: readonly StackSlide[] = [
     title: "Read every floor message",
     description:
       "The agent parses WhatsApp voice notes, photos and text in Tamil, Hindi and English, and writes each one to the PO it belongs to.",
-    image: ASSETS.floor,
+    image: stillForSlide(0),
     rows: [
       {
         label: "No new app for the floor",
@@ -135,7 +147,7 @@ export const HOMEPAGE_STACK_SLIDES: readonly StackSlide[] = [
     title: "Never chase a status again",
     description:
       "DAITA asks the line for the update before the merchandiser has to, then logs the reply against the milestone.",
-    image: ASSETS.floor,
+    image: stillForSlide(1),
     rows: [
       {
         label: "Nudges on schedule",
@@ -157,7 +169,7 @@ export const HOMEPAGE_STACK_SLIDES: readonly StackSlide[] = [
     title: "Catch slippage the same day",
     description:
       "Actual output is compared to plan every evening. When a line falls behind, cut, finish and ship dates reflow together.",
-    image: ASSETS.floor,
+    image: stillForSlide(2),
     rows: [
       {
         label: "Plan against actual, nightly",
@@ -179,7 +191,7 @@ export const HOMEPAGE_STACK_SLIDES: readonly StackSlide[] = [
     title: "Reconcile the paperwork",
     description:
       "POs, cut reports, packing lists and invoices are cross-checked as they arrive. Mismatched quantities are flagged, not discovered at audit.",
-    image: ASSETS.floor,
+    image: stillForSlide(3),
     rows: [
       {
         label: "Checked on arrival",

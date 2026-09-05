@@ -1,7 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Source markup uses a plain background
-   element in this slot; the card art is a single static still positioned by the
-   surrounding wrapper, so next/image's wrapper would fight the existing layout. */
-import { ASSETS } from "@/components/sites/daita/shared/brand";
+import { MEDIA, type MediaVideo } from "@/components/sites/daita/shared/brand";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 
@@ -9,11 +6,10 @@ import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
  * `.section_video-cards` — "Built where the work happens".
  *
  * Five `.video-card`s (3 + 2 at desktop, stacked at <=767px), unchanged from the
- * source layout. The source stock-footage mp4/webm/poster triplets were removed with
- * the rest of the pre-rebrand assets, so each card's media box now carries a single still
- * from the Tiruppur floor film. There is no per-card artwork: all five reference the
- * one designated asset, which is not in the repo yet — the path is intentional and
- * resolves once the file lands in public/images/daita/.
+ * source layout. Each card's media box carries its own looping, muted, autoplaying
+ * background film from `MEDIA.sectionVideos`, matched to the card by position: card
+ * `i` plays `MEDIA.sectionVideos[i]`. WebM is listed before mp4 on purpose — Chrome
+ * and Firefox take the smaller VP9 build and only Safari falls through to the mp4.
  *
  * The source kept `.video-card_desc` inside a collapsed `[data-expand]` wrapper
  * (height driven to 0 by Webflow's interaction script) so the homepage showed
@@ -23,6 +19,9 @@ import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
  * CARD COUNT — the desktop grid is a plain `grid-cols-3`, so it takes any count
  * without a class change: 5 fills 3 + 2, 3 fills a single row, 6 would fill 3 + 3.
  * Below 768px the grid is replaced by a stacked flex column regardless of count.
+ * `/platform` passes three cards, which take the first three films; a caller passing
+ * more cards than there are films reuses the last one rather than rendering an empty
+ * `<video>`.
  */
 
 export interface InfrastructureCard {
@@ -68,6 +67,12 @@ export interface InfrastructureSectionProps {
   heading?: string;
   subheading?: string;
   cards?: readonly InfrastructureCard[];
+  /**
+   * Background films, matched to cards by position. Defaults to the full set.
+   * `/platform` renders this section twice, so the second instance passes a rotated
+   * list — otherwise both would play the same three films on one page.
+   */
+  videos?: readonly MediaVideo[];
 }
 
 /** `.section_padding` — 7.5rem, 5.5rem at <=767px. */
@@ -79,6 +84,7 @@ export function InfrastructureSection({
   heading = HOMEPAGE_HEADING,
   subheading = HOMEPAGE_SUBHEADING,
   cards = HOMEPAGE_PILLARS,
+  videos = MEDIA.sectionVideos,
 }: InfrastructureSectionProps = {}) {
   return (
     <section className="relative isolate bg-ns-bg-primary">
@@ -109,36 +115,49 @@ export function InfrastructureSection({
 
             {/* .video-cards_list-wrap */}
             <div className="grid grid-cols-3 gap-4 max-[767px]:flex max-[767px]:flex-col max-[767px]:gap-[0.625rem]">
-              {cards.map((card) => (
-                <div
-                  key={card.title}
-                  className="flex aspect-[400/480] w-full min-w-0 flex-col justify-start gap-4 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-4"
-                >
-                  {/* .video-card_video.w-background-video — same box, still instead of film */}
-                  <div className="relative z-[2] block w-full flex-1 overflow-hidden rounded-[6px] text-white max-[991px]:min-h-0">
-                    <img
-                      src={ASSETS.floor}
-                      alt=""
-                      className="absolute inset-[-100%] z-[-100] m-auto h-full w-full bg-cover bg-center object-cover"
-                    />
-                  </div>
+              {cards.map((card, index) => {
+                // Card `i` plays film `i`; a card past the end of the list reuses the
+                // last film so an over-long `cards` prop can never render an empty box.
+                const video =
+                  videos[Math.min(index, videos.length - 1)];
 
-                  {/* .video-card_copy */}
-                  <div>
-                    <h3 className="text-[1.5rem] font-medium leading-[2rem] text-ns-content-primary">
-                      {card.title}
-                    </h3>
-                    {/* .video-card_expand — uncollapsed: the description is real copy now */}
+                return (
+                  <div
+                    key={card.title}
+                    className="flex aspect-[400/480] w-full min-w-0 flex-col justify-start gap-4 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-4"
+                  >
+                    {/* .video-card_video.w-background-video */}
+                    <div className="relative z-[2] block w-full flex-1 overflow-hidden rounded-[6px] text-white max-[991px]:min-h-0">
+                      <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        poster={video.poster}
+                        className="absolute inset-[-100%] z-[-100] m-auto h-full w-full bg-cover bg-center object-cover"
+                      >
+                        <source src={video.webm} type="video/webm" />
+                        <source src={video.mp4} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* .video-card_copy */}
                     <div>
-                      <div className="pt-2">
-                        <p className="text-[0.875rem] leading-[1.25rem] text-ns-content-secondary">
-                          {card.description}
-                        </p>
+                      <h3 className="text-[1.5rem] font-medium leading-[2rem] text-ns-content-primary">
+                        {card.title}
+                      </h3>
+                      {/* .video-card_expand — uncollapsed: the description is real copy now */}
+                      <div>
+                        <div className="pt-2">
+                          <p className="text-[0.875rem] leading-[1.25rem] text-ns-content-secondary">
+                            {card.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

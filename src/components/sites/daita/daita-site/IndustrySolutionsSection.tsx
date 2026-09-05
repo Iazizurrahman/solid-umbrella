@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { ASSETS } from "@/components/sites/daita/shared/brand";
+import { MEDIA } from "@/components/sites/daita/shared/brand";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
@@ -19,8 +19,8 @@ export const HOMEPAGE_INDUSTRY_HEADING = "Who it’s for";
  * Beachhead unresolved — factories-first vs buying-offices-first. Two equal tabs
  * is the neutral position; lead with the winner once decided.
  *
- * The two `.use-case_item` entries, in source order. Both artwork slots point at
- * the shared Tiruppur floor still (`ASSETS.floor`).
+ * The two `.use-case_item` entries, in source order. Each card carries its own
+ * artwork (`MEDIA.industryPrimary` / `MEDIA.industrySecondary`).
  */
 export const HOMEPAGE_INDUSTRY_SOLUTIONS: readonly IndustrySolution[] = [
   {
@@ -30,7 +30,7 @@ export const HOMEPAGE_INDUSTRY_SOLUTIONS: readonly IndustrySolution[] = [
     subtitle: "One timeline across every unit",
     description:
       "Export houses running multiple units and multiple buyers, where merchandisers coordinate every order over WhatsApp, email and Excel. DAITA sits on the channels the factory already runs, builds and maintains the T&A, and surfaces slippage while there’s still time to fix it.",
-    image: ASSETS.floor,
+    image: MEDIA.industryPrimary,
     imageAlt: "",
     href: "/platform",
   },
@@ -41,9 +41,8 @@ export const HOMEPAGE_INDUSTRY_SOLUTIONS: readonly IndustrySolution[] = [
     subtitle: "Visibility into what the supplier is actually doing",
     description:
       "Buying offices representing brands across several factories, where status arrives late and second-hand. DAITA structures what suppliers are already reporting, so the office sees the same numbers as the floor on the day they’re recorded.",
-    /* A dedicated buying-office shot is still needed; reusing the same floor
-       still as the first card for now. */
-    image: ASSETS.floor,
+    /* Its own shot, distinct from the first card's. */
+    image: MEDIA.industrySecondary,
     imageAlt: "",
     href: "/platform",
   },

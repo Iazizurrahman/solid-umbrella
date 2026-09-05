@@ -6,7 +6,7 @@ import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNew
 import { SiteFooter } from "@/components/sites/daita/daita-site/SiteFooter";
 import { SectionSeparator } from "@/components/sites/daita/shared/layout";
 import { Anchor } from "@/components/sites/daita/shared/Anchor";
-import { ASSETS, CTA } from "@/components/sites/daita/shared/brand";
+import { CTA, MEDIA } from "@/components/sites/daita/shared/brand";
 
 /**
  * /contact — the enquiry page, and the destination for every "Book a Demo" on the site.
@@ -63,7 +63,7 @@ export default function ContactPage() {
           primaryCta={{ label: CTA.label, href: "/contact#get-started" }}
           secondaryCta={null}
           variant="image"
-          media={{ src: ASSETS.floor, alt: "" }}
+          media={{ src: MEDIA.sectionStill, alt: "" }}
         />
         <SectionSeparator />
 

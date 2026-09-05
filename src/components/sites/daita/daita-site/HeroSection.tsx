@@ -5,8 +5,8 @@ import { Container } from "@/components/sites/daita/shared/layout";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 import {
-  ASSETS,
   CTA,
+  MEDIA,
   SECONDARY_CTA,
 } from "@/components/sites/daita/shared/brand";
 
@@ -18,9 +18,13 @@ export interface HeroCta {
 
 /** The 880px blended box's payload: a looping film or a single still. */
 export interface HeroMedia {
+  /** The still for the `"image"` variant; the MP4 fallback source for `"video"`. */
   src: string;
-  /** Video only — first-frame fallback while the film loads. */
-  poster?: string;
+  /**
+   * Video only — the VP9 build, emitted as the FIRST `<source>` so Chrome and Firefox
+   * take the 22MB WebM and only Safari falls through to the 65MB HEVC `src`.
+   */
+  webm?: string;
   /** Image variant only; decorative by default, matching the video's aria posture. */
   alt?: string;
 }
@@ -45,10 +49,10 @@ export const HOMEPAGE_HERO: HeroContent = {
   secondaryCta: SECONDARY_CTA,
   variant: "video",
   media: {
-    /* Single DAITA film. The asset is not in the repo yet — the path is
-       intentional and resolves once the file lands in public/images/daita/. */
-    src: ASSETS.heroVideo,
-    poster: ASSETS.floor,
+    /* The original two-codec hero film: VP9 for Chrome/Firefox, HEVC for Safari.
+       No poster — the source markup carried none. */
+    webm: MEDIA.heroVideoWebm,
+    src: MEDIA.heroVideoMp4,
   },
 };
 
@@ -115,10 +119,16 @@ export function HeroSection({
               muted
               playsInline
               preload="auto"
-              src={media.src}
-              poster={media.poster}
               className="h-full w-full object-cover"
-            />
+            >
+              {/* WebM first: the browser takes the first source it can play, so
+                  Chrome/Firefox get the 22MB VP9 build and only Safari falls
+                  through to the 65MB HEVC one. Do not reorder these. */}
+              {media.webm ? (
+                <source src={media.webm} type="video/webm" />
+              ) : null}
+              <source src={media.src} type="video/mp4" />
+            </video>
           )}
         </div>
       </div>

@@ -9,7 +9,7 @@ import { Container, SectionSeparator } from "@/components/sites/daita/shared/lay
 import { Anchor } from "@/components/sites/daita/shared/Anchor";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
-import { ASSETS, CONTACT, CTA } from "@/components/sites/daita/shared/brand";
+import { CONTACT, CTA, MEDIA } from "@/components/sites/daita/shared/brand";
 
 /**
  * /our-story — how DAITA got built, told as seven numbered beats.
@@ -156,7 +156,7 @@ export default function OurStoryPage() {
           primaryCta={CTA}
           secondaryCta={null}
           variant="image"
-          media={{ src: ASSETS.floor, alt: "" }}
+          media={{ src: MEDIA.sectionStill, alt: "" }}
         />
         <SectionSeparator />
 

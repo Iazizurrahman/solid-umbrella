@@ -1,6 +1,20 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Alignment,
+  Fit,
+  Layout,
+  useRive,
+  type UseRiveParameters,
+} from "@rive-app/react-canvas";
+
+import { MEDIA } from "@/components/sites/daita/shared/brand";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
+import { cn } from "@/lib/utils";
 import type { PlatformLayer } from "@/types/daita";
 
 /**
@@ -9,25 +23,59 @@ import type { PlatformLayer } from "@/types/daita";
  * Desktop only: the source section carries `hide-tablet hide-mobile`, so it is
  * painted at >=992px and a separate `PlatformStackMobileSection` covers below.
  *
- * INTERACTION MODEL — hover, nothing else. The left grid column previously held
- * a Rive canvas whose `LayerController` state machine was data-bound to the four
- * cards; that `.riv` file is gone, so the canvas, the `useRive` hook and the
- * whole hover-boolean/click-trigger binding have been removed. The cards keep
- * their exact `.services-stack2_item` treatment — base `opacity: .6`, active
- * `opacity: 1`, `all .2s cubic-bezier(.215,.61,.355,1)` — driven now by a plain
- * CSS `hover:` on each card rather than by an observed Rive boolean.
+ * INTERACTION MODEL — hover, not scroll and not click. A Rive canvas
+ * (`Artboard` / `LayerController` state machine, `autoBind: true`) sits in the
+ * left grid column and the cards sit in the right one. The binding runs both
+ * ways through `rive.viewModelInstance`:
  *
- * The left column keeps the canvas's exact box and paints the section image in
- * it, so the two-column grid is untouched.
+ *   - card `mouseenter`  ->  set `<key>_hovered` true, the other keys false
+ *   - `<key>_hovered` observed  ->  the matching card gets `.is-active`
+ *   - `<key>_clicked` observed  ->  navigate to that card's href
+ *
+ * so hovering a card drives the artwork and hovering the artwork highlights the
+ * card. The artboard's four layer keys are fixed by the `.riv` file — `cloud`,
+ * `infrastructure`, `dc` (NOT `data-centers`) and `energy` — and have nothing to
+ * do with DAITA's card ids, so cards are bound to them BY POSITION:
+ * card 0 -> cloud, 1 -> infrastructure, 2 -> dc, 3 -> energy.
+ *
+ * The canvas is a pure enhancement: `viewModelInstance` is null until the file
+ * loads, every access is guarded, and if the `.riv` never arrives the cards
+ * still render, still highlight on hover, and are still ordinary links.
  *
  * LAYER COUNT — the right column is a flex column, so any number of cards simply
- * makes it taller; the left image is `h-full min-h-[1000px] object-cover`, so it
- * grows with the row and crops rather than distorts. No class change is needed
- * for 6 layers (or 2).
+ * makes it taller. `/platform` passes six; the artboard only has four layers, so
+ * cards 5 and 6 get no key: they never touch the canvas and fall back to the
+ * `hover:opacity-100` that is on every card anyway. Hovering one clears the
+ * artwork's highlight (all four booleans false, its resting state) rather than
+ * leaving an unrelated layer lit. Fewer than four cards is equally fine — the
+ * spare keys are simply never bound.
  */
 
-/** `.services-stack2_rive-canvas` box, now filled by the section image. */
-const STACK_IMAGE = "/images/daita/sand-3.jpg";
+/**
+ * Fixed by the artboard, in layer order. The card at index N drives the key at
+ * index N; there is deliberately no lookup by card id.
+ */
+const RIVE_LAYER_KEYS = ["cloud", "infrastructure", "dc", "energy"] as const;
+
+/**
+ * Kept at module scope so the object identity is stable — `useRive` captures the
+ * params on first render.
+ */
+const RIVE_PARAMS: UseRiveParameters = {
+  src: MEDIA.riveStack,
+  artboard: "Artboard",
+  stateMachines: "LayerController",
+  autoBind: true,
+  autoplay: true,
+  layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
+};
+
+/**
+ * The source sizes the canvas itself (140% wide, 1000px min-height) and calls
+ * `resizeDrawingSurfaceToCanvas()` by hand, so the hook's container-fitting is
+ * off here.
+ */
+const RIVE_OPTIONS = { shouldResizeCanvasToContainer: false };
 
 export interface StackLayer extends PlatformLayer {
   href: string;
@@ -177,6 +225,96 @@ export function PlatformStackSection({
   cta = HOMEPAGE_STACK_CTA,
   layers = HOMEPAGE_STACK_LAYERS,
 }: PlatformStackSectionProps = {}) {
+  const router = useRouter();
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  // `rive` is only populated once the file has loaded, so a non-null value
+  // means `viewModelInstance` is available — it is still guarded below.
+  const { rive, setCanvasRef } = useRive(RIVE_PARAMS, RIVE_OPTIONS);
+
+  // onLoad + every window resize: match the drawing surface to the CSS box.
+  useEffect(() => {
+    if (!rive) return;
+
+    const resize = () => {
+      try {
+        rive.resizeDrawingSurfaceToCanvas();
+      } catch {
+        // The instance can be torn down mid-flight; nothing to recover.
+      }
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [rive]);
+
+  // The reverse half of the binding: observe `<key>_hovered` so hovering the
+  // artwork highlights the card, and `<key>_clicked` so clicking it navigates.
+  // Keys with no card behind them (fewer than four layers) are skipped.
+  useEffect(() => {
+    const viewModel = rive?.viewModelInstance;
+    if (!viewModel) return;
+
+    const teardown: Array<() => void> = [];
+
+    RIVE_LAYER_KEYS.forEach((key, index) => {
+      const layer = layers[index];
+      if (!layer) return;
+
+      const hovered = viewModel.boolean(`${key}_hovered`);
+      if (hovered) {
+        // Rive hands the boolean's value to the callback; the runtime types it
+        // as its generic event payload, so widen rather than lie about it.
+        const onHovered = (value: unknown) => {
+          if (value === true) {
+            setActiveIndex(index);
+          } else {
+            setActiveIndex((current) => (current === index ? null : current));
+          }
+        };
+        hovered.on(onHovered);
+        teardown.push(() => hovered.off(onHovered));
+      }
+
+      const clicked = viewModel.trigger(`${key}_clicked`);
+      if (clicked) {
+        const onClicked = () => router.push(layer.href);
+        clicked.on(onClicked);
+        teardown.push(() => clicked.off(onClicked));
+      }
+    });
+
+    return () => {
+      for (const off of teardown) {
+        try {
+          off();
+        } catch {
+          // Property handles die with the instance; unsubscribing is best-effort.
+        }
+      }
+    };
+  }, [rive, router, layers]);
+
+  // The forward half: a card's mouseenter drives the artwork. `setActiveIndex`
+  // runs first so the highlight is correct even with no canvas. A card past the
+  // artboard's four layers matches no key, so every boolean goes false and the
+  // artwork returns to its resting state.
+  const handleEnter = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+
+      const viewModel = rive?.viewModelInstance;
+      if (!viewModel) return;
+
+      RIVE_LAYER_KEYS.forEach((key, keyIndex) => {
+        const hovered = viewModel.boolean(`${key}_hovered`);
+        if (hovered) hovered.value = keyIndex === index;
+      });
+    },
+    [rive],
+  );
+
   return (
     <section className="ns-hide-tablet ns-hide-mobile relative isolate bg-ns-bg-secondary">
       <SectionPadding />
@@ -222,26 +360,30 @@ export function PlatformStackSection({
 
             {/* .services-stack2_wrap */}
             <div className="grid w-full grid-cols-2 gap-0">
-              {/* The old `.services-stack2_rive-canvas` box, kept verbatim so the
-                  grid column is unchanged — deliberately overflows its column. */}
-              {/* eslint-disable-next-line @next/next/no-img-element -- decorative
-                  section artwork dropped straight into the former canvas box. */}
-              <img
-                src={STACK_IMAGE}
-                alt=""
-                loading="lazy"
-                className="ml-[-15%] block h-full min-h-[1000px] w-[140%] object-cover"
+              {/* .services-stack2_rive-canvas — deliberately overflows its column */}
+              <canvas
+                ref={setCanvasRef}
+                aria-hidden="true"
+                className="ml-[-15%] block h-full min-h-[1000px] w-[140%]"
               />
 
               {/* .services-stack2_items-wrap */}
               <div className="relative z-[1] flex w-full flex-col items-stretch justify-center gap-6 pl-4">
-                {layers.map((layer) => (
+                {layers.map((layer, index) => (
                   <a
                     key={layer.id}
                     href={layer.href}
                     data-layer={layer.id}
-                    // .services-stack2_item — base .6, .is-active 1, now pure CSS hover
-                    className="flex w-full flex-col gap-4 rounded-[6px] border border-ns-border-secondary bg-ns-bg-secondary p-6 text-ns-content-primary opacity-60 transition-all duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)] hover:opacity-100"
+                    data-rive-layer={RIVE_LAYER_KEYS[index]}
+                    onMouseEnter={() => handleEnter(index)}
+                    className={cn(
+                      // .services-stack2_item
+                      "flex w-full flex-col gap-4 rounded-[6px] border border-ns-border-secondary bg-ns-bg-secondary p-6 text-ns-content-primary opacity-60 transition-all duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)]",
+                      // CSS fallback so the highlight still works with no canvas
+                      "hover:opacity-100",
+                      // .is-active, driven by the Rive `<key>_hovered` observer
+                      activeIndex === index && "opacity-100",
+                    )}
                   >
                     <h3 className="text-[2rem] font-medium leading-[2.625rem]">
                       {layer.title}
