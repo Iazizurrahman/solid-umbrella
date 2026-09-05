@@ -5,8 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ---------------------------------------------------------------------------
-   nscale.com design tokens
-   Extracted from nscale-v4.webflow.shared.04a529bd2.css.
+   DAITA design tokens
+   The `--ns-*` prefix is historical and is retained deliberately: these names are
+   referenced by every section component and by the Tailwind theme below, so renaming
+   them would be a design-system change, not a content one.
 
    The source stylesheet declares :root twice — a light collection followed by a
    dark one that overrides it. The dark values are the only ones that ever
@@ -21,7 +23,7 @@
   --font-mono: var(--font-dm-mono), Arial, sans-serif;
   --font-heading: var(--font-dm-sans), Arial, sans-serif;
 
-  /* nscale semantic tokens, exposed to Tailwind as bg- / text- / border- utilities */
+  /* Semantic tokens, exposed to Tailwind as bg- / text- / border- utilities */
   --color-ns-bg-primary: var(--ns-background-primary);
   --color-ns-bg-secondary: var(--ns-background-secondary);
   --color-ns-bg-inverse: var(--ns-background-inverse);
@@ -86,7 +88,7 @@
 }
 
 :root {
-  /* --- nscale raw tokens (verbatim from the source dark :root) --- */
+  /* --- Raw palette tokens --- */
   --ns-background-primary: #0c0c0e;
   --ns-background-secondary: #161618;
   --ns-background-inverse: #ffffff;
@@ -113,7 +115,7 @@
   --ns-border-glass-primary: #ffffff1a;
   --ns-border-glass-secondary: #ffffff0d;
 
-  /* --- shadcn bridge, mapped onto the nscale palette --- */
+  /* --- shadcn bridge, mapped onto the palette above --- */
   --background: var(--ns-background-primary);
   --foreground: var(--ns-content-secondary);
   --card: var(--ns-background-secondary);

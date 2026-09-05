@@ -1,33 +1,34 @@
-import { SiteHeader } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/SiteHeader";
-import { HeroSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/HeroSection";
-import { LatestNewsSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/LatestNewsSection";
-import { PlatformStackSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/PlatformStackSection";
-import { PlatformStackMobileSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/PlatformStackMobileSection";
-import { InfrastructureSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/InfrastructureSection";
-import { TrustedLogosSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/TrustedLogosSection";
-import { TestimonialsSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/TestimonialsSection";
-import { IndustrySolutionsSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/IndustrySolutionsSection";
-import { LatestStoriesSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/LatestStoriesSection";
-import { CtaSection } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/CtaSection";
-import { SiteFooter } from "@/components/sites/www-nscale-com-782295e3/root-8a5edab2/SiteFooter";
-import { SectionSeparator } from "@/components/sites/www-nscale-com-782295e3/shared/layout";
+import { SiteHeader } from "@/components/sites/daita/daita-site/SiteHeader";
+import { HeroSection } from "@/components/sites/daita/daita-site/HeroSection";
+import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNewsSection";
+import { PlatformStackSection } from "@/components/sites/daita/daita-site/PlatformStackSection";
+import { PlatformStackMobileSection } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
+import { InfrastructureSection } from "@/components/sites/daita/daita-site/InfrastructureSection";
+import { TrustedLogosSection } from "@/components/sites/daita/daita-site/TrustedLogosSection";
+import { TestimonialsSection } from "@/components/sites/daita/daita-site/TestimonialsSection";
+import { IndustrySolutionsSection } from "@/components/sites/daita/daita-site/IndustrySolutionsSection";
+import { LatestStoriesSection } from "@/components/sites/daita/daita-site/LatestStoriesSection";
+import { CtaSection } from "@/components/sites/daita/daita-site/CtaSection";
+import { SiteFooter } from "@/components/sites/daita/daita-site/SiteFooter";
+import { SectionSeparator } from "@/components/sites/daita/shared/layout";
+import { Anchor } from "@/components/sites/daita/shared/Anchor";
 
 /**
- * nscale.com homepage clone.
+ * DAITA homepage.
  *
- * Page shell mirrors the source's `body > .page-wrapper` structure:
- *   header.header   — position: fixed, inset 0 0 auto, z-index 999 (transparent at scroll 0)
- *   main.main-wrapper
- *   div.footer
+ * Twelve sections, in the order the rebrand brief defines them:
+ *   header · hero · what's live today · what DAITA does (desktop + mobile) ·
+ *   why DAITA · integrations · testimonial · who it's for · FAQ · CTA · footer
  *
- * `main` starts at page Y 0 and flows UNDER the fixed header — the hero video is meant to
- * show through it, so there is deliberately no top spacer here.
+ * `main` starts at page Y 0 and flows UNDER the fixed header — the hero film is meant
+ * to show through it, so there is deliberately no top spacer here. Interior routes add
+ * `pt-[73px]` instead, because they open with an ordinary section.
  *
- * Sections are separated by real 1px `.section-separator` elements, not borders. The order
- * and the separator placement below match the source DOM exactly.
+ * The platform stack ships as two sibling sections that never appear together: the
+ * desktop layout (>=992px) and the mobile carousel (<992px). Both live under a single
+ * `#platform` anchor, since an id may only appear once per document.
  *
- * The platform stack ships as two sibling sections that never appear together:
- * the Rive canvas version (>=992px) and the Swiper + accordion version (<992px).
+ * Anchor ids match the brief's link map: #why-daita, #who-its-for, #faq.
  */
 export default function Home() {
   return (
@@ -38,31 +39,47 @@ export default function Home() {
         <HeroSection />
         <SectionSeparator />
 
-        <LatestNewsSection />
+        <Anchor id="latest-news">
+          <LatestNewsSection />
+        </Anchor>
         <SectionSeparator />
 
-        <PlatformStackSection />
+        <Anchor id="platform">
+          <PlatformStackSection />
+          <SectionSeparator />
+          <PlatformStackMobileSection />
+        </Anchor>
         <SectionSeparator />
 
-        <PlatformStackMobileSection />
+        <Anchor id="why-daita">
+          <InfrastructureSection />
+        </Anchor>
         <SectionSeparator />
 
-        <InfrastructureSection />
+        <Anchor id="integrations">
+          <TrustedLogosSection />
+        </Anchor>
         <SectionSeparator />
 
-        <TrustedLogosSection />
+        {/* Renders nothing until Estee Exports sign-off lands — see TestimonialsSection. */}
+        <Anchor id="testimonials">
+          <TestimonialsSection />
+        </Anchor>
         <SectionSeparator />
 
-        <TestimonialsSection />
+        <Anchor id="who-its-for">
+          <IndustrySolutionsSection />
+        </Anchor>
         <SectionSeparator />
 
-        <IndustrySolutionsSection />
+        <Anchor id="faq">
+          <LatestStoriesSection />
+        </Anchor>
         <SectionSeparator />
 
-        <LatestStoriesSection />
-        <SectionSeparator />
-
-        <CtaSection />
+        <Anchor id="get-started">
+          <CtaSection />
+        </Anchor>
       </main>
 
       <SiteFooter />
