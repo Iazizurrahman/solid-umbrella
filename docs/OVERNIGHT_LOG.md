@@ -429,3 +429,139 @@ Two more worth knowing, not acted on:
   variants — 56% of all non-media weight on those routes.
 - **Video is 8–16 MB per route.** Five section films plus the hero. It dwarfs everything
   else on the page and is the single biggest thing anyone could do about load time.
+
+---
+
+# Summary
+
+Six phases, seven commits, on `exp-overnight` from `57cdd83`. Nothing pushed, nothing
+deployed. `npm run check` clean at the end of every phase. Tree clean.
+
+```
+225b917  Overnight run: start log
+39e9095  Phase 1: TNA Engine interactive demo on /platform
+eaf2715  Phase 2: WhatsApp agent simulator, wired to the TNA grid
+0a53035  Phase 3: hero variant routes, switcher, robots and sitemap
+27f29a0  Phase 4: Sand theme, header toggle, persisted
+d7ef480  Phase 5: order trail moved to the homepage, scroll-pinned
+e1e1f56  Phase 6: audit fixes
+```
+
+## What shipped
+
+- **TNA Engine** on `/platform` — 6 fictional POs x 8 stages, five states, click a cell
+  for planned/actual/delta/owner/approval, mark complete and watch the plan reflow,
+  filter and group by unit, four saved views, row hover, full keyboard grid.
+- **WhatsApp agent simulator** — five turns, trilingual, in the platform stack's chase
+  card and again as its own section on `/platform`, where confirming a reply closes the
+  stage in the grid above it.
+- **Hero variant test** — `/hero-a`, `/hero-b`, `/hero-c`, identical below the fold by
+  construction, a fixed switcher, and three layers of search-engine exclusion.
+- **Sand theme** — the second palette and its three faces, on a header toggle, persisted,
+  no flash.
+- **Order trail** moved to the homepage and scroll-pinned, with two static fallbacks.
+- **Audit** — zero horizontal overflow, zero aspect drift, zero accessibility defects in
+  the categories checked, 14 orphans removed, 97 KB of font off every page load.
+
+## Decisions I made without you
+
+Each of these had a defensible alternative. I took the more conservative one and logged
+it; all are cheap to reverse.
+
+1. **The five TNA states use `glass-green`, `glass-orange`, `destructive` and the border
+   set** — no new colour token. `glass-orange` is `#100902cc`, effectively black on this
+   ground, so "due soon" leans on the brightest border rather than its fill. Every state
+   also carries a glyph and a full sentence in its accessible name, so nothing is
+   colour-only. **If you want a proper status ramp, this is the place to add it.**
+2. **The demo's "today" is frozen at 14 Apr 2026.** A live clock would desync server and
+   client and rot the sample states within a week.
+3. **The platform stack's chase simulator is not wired to the grid, even on
+   `/platform`.** Two simulators driving one grid would let a visitor close the same
+   stage twice from two places. The dedicated section is the one that drives it.
+4. **Only the h1 varies between hero variants.** The brief names an eyebrow for A only,
+   which is the eyebrow the site already ships; I read that as "A is the control".
+5. **The Sand theme has no blue panels.** The three brand-gradient sections are
+   hardcoded `#0f41f3` to `#289dd0`, and ink on that blue is unreadable, so the warm
+   theme restates the same 45deg/16% gradient in sand. **This is a brand decision, not a
+   technical one — please look at it.**
+6. **`text-wrap: balance` on h3-h5 but never h1/h2.** Balancing display type would
+   re-break headings that were matched to the source line for line. I verified every
+   section height is unchanged after the h3-h5 change.
+7. **No global reduced-motion kill switch.** It would change motion the rebrand brief
+   said to keep. The one scroll-linked animation added tonight has a full static path.
+
+## What failed, or nearly did
+
+- **The first pin test looked broken.** Headless Chrome reports
+  `prefers-reduced-motion: reduce` by default and ignores
+  `--force-prefers-reduced-motion`; the pin was correctly serving its static fallback.
+  The harness now sets the media feature over CDP.
+- **A whole audit pass was invalid.** Rebuilding while `next start` was running left the
+  server serving HTML whose stylesheet 500'd, so every page measured as unstyled: 1900px
+  logos, overflow everywhere. Caught it because the numbers got *worse* after fixes that
+  could not have caused it. Re-ran clean.
+- **I could not measure a true pre-overnight baseline weight.** A git worktree at
+  `57cdd83` with a junctioned `node_modules` fails to build — Turbopack rejects the
+  symlink ("points out of the filesystem root"). Rather than copy 1 GB of
+  `node_modules`, the weight table compares before and after the *audit's* fixes, which
+  is what Phase 6 asked for. A full-night delta would need a clean `npm ci` in a
+  worktree.
+- **`sr-only` spans widened the document to 915px at 479.** They are absolutely
+  positioned; without a positioned scroll container they escaped the TNA grid's clip.
+  One `relative` fixed it — worth remembering, it will happen again.
+
+## What needs you
+
+1. **The Sand theme's blue panels** (decision 5 above) — sign off, or tell me to keep the
+   blue and re-do the type colour instead.
+2. **The POC names in the TNA sample data** (`S. Anand`, `K. Meena`, `R. Balan`,
+   `T. Vasu`, `N. Priya`, `J. Ilango`, `D. Arasu`, `L. Chitra`, `V. Ganesan`, `M. Selva`,
+   `P. Kavitha`, `B. Ravi`) are invented. If any collides with a real person at DAITA,
+   say so and I will swap them.
+3. **168 KB of Noto** for one caption line. Subsetting to the eleven codepoints used
+   takes it under 5 KB but needs a build step `next/font` cannot express. Worth doing?
+4. **The Rive artboard is 2.2 MB** and is dark-only — under Sand it is a CSS
+   `invert(1) hue-rotate(180deg)` stopgap. A light artboard would fix the theme and is
+   the natural moment to also shrink the file.
+5. **8-16 MB of video per route.** Nothing else on the page comes close. It is the
+   single biggest available win and it is an asset decision, not a code one.
+6. **`sitemap.ts` and `robots.ts` hardcode `https://www.daitalabs.com`.** Correct if that
+   is the production host.
+7. Still open from before tonight and untouched: the `max-[767px]` one-pixel breakpoint
+   drift (82 + 17 occurrences), the DAITA logo being a dark mark on a dark header, the
+   contact form's `mailto:` stopgap, and the Tiruppur/Bengaluru location conflict.
+
+## What I would keep, and what I would drop
+
+**Keep.**
+
+- *The TNA Engine.* It is the only thing on the site that shows what the product
+  actually is rather than describing it, and the reflow — close one stage, watch six
+  dates move — is the whole pitch in one gesture. It is also the most finished thing
+  here.
+- *The WhatsApp simulator.* Cheap, fast to grasp, and the partial-report branch (log 120
+  pcs, milestone stays open, agent says it will ask again) is more persuasive than the
+  happy path because it is obviously not a demo trick.
+- *The hero variant harness.* Not the variants — the harness. One composition component
+  and three thin routes means you can test any headline in five minutes, and the
+  exclusion is already correct.
+
+**Drop, or at least do not ship yet.**
+
+- *The Sand theme.* It works, and it is genuinely handsome, but it is a second design
+  system to maintain: three more font families, a hardcoded-blue problem I papered over,
+  a Rive artboard that needs re-authoring, and five section films that are wrong for a
+  warm palette. Unless a real audience wants it, that is ongoing cost for a novelty. I
+  would keep the code on the branch and not merge it.
+- *The scroll-pinned order trail, as pinned.* The content belongs on the homepage —
+  that move is right. But the pin costs 3,240px of scroll, roughly a third of the page,
+  to deliver five short lines a visitor could read in one static block in two seconds.
+  It also does nothing on mobile or under reduced motion, which is a lot of machinery
+  for one audience. I would ship the section in its static form and keep the pin behind
+  the same flag as the theme.
+
+**Genuinely unsure.**
+
+- *Hero variant B* ("Your production floor is instrumented. Your order desk isn't.") is
+  the most interesting line of the three and the riskiest — it leads with a problem a
+  visitor has to already recognise. It is worth real traffic, not a judgement from me.
