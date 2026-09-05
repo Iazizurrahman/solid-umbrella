@@ -4,12 +4,54 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   nscale.com design tokens
+   Extracted from nscale-v4.webflow.shared.04a529bd2.css.
+
+   The source stylesheet declares :root twice — a light collection followed by a
+   dark one that overrides it. The dark values are the only ones that ever
+   render; the site has no theme toggle. Only the dark palette is reproduced.
+   --------------------------------------------------------------------------- */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+
+  --font-sans: var(--font-dm-sans), Arial, sans-serif;
+  --font-mono: var(--font-dm-mono), Arial, sans-serif;
+  --font-heading: var(--font-dm-sans), Arial, sans-serif;
+
+  /* nscale semantic tokens, exposed to Tailwind as bg- / text- / border- utilities */
+  --color-ns-bg-primary: var(--ns-background-primary);
+  --color-ns-bg-secondary: var(--ns-background-secondary);
+  --color-ns-bg-inverse: var(--ns-background-inverse);
+  --color-ns-bg-highlight: var(--ns-background-highlight);
+  --color-ns-bg-glass-primary: var(--ns-background-glass-primary);
+  --color-ns-bg-glass-secondary: var(--ns-background-glass-secondary);
+  --color-ns-bg-glass-dark: var(--ns-background-glass-dark);
+  --color-ns-bg-glass-deep-blue: var(--ns-background-glass-deep-blue);
+  --color-ns-bg-glass-blue: var(--ns-background-glass-blue);
+  --color-ns-bg-glass-green: var(--ns-background-glass-green);
+  --color-ns-bg-glass-purple: var(--ns-background-glass-purple);
+  --color-ns-bg-glass-orange: var(--ns-background-glass-orange);
+
+  --color-ns-content-primary: var(--ns-content-primary);
+  --color-ns-content-secondary: var(--ns-content-secondary);
+  --color-ns-content-tertiary: var(--ns-content-tertiary);
+  --color-ns-content-inverse: var(--ns-content-inverse);
+  --color-ns-content-highlight: var(--ns-content-highlight);
+  --color-ns-content-link: var(--ns-content-link);
+
+  --color-ns-border-primary: var(--ns-border-primary);
+  --color-ns-border-secondary: var(--ns-border-secondary);
+  --color-ns-border-hover: var(--ns-border-hover);
+  --color-ns-border-glass-primary: var(--ns-border-glass-primary);
+  --color-ns-border-glass-secondary: var(--ns-border-glass-secondary);
+
+  /* Content column: .container-large max-width 77rem */
+  --spacing-ns-container: 77rem;
+
+  /* shadcn token bridge — kept so shadcn/ui primitives inherit the palette */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -18,11 +60,6 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -49,72 +86,62 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* --- nscale raw tokens (verbatim from the source dark :root) --- */
+  --ns-background-primary: #0c0c0e;
+  --ns-background-secondary: #161618;
+  --ns-background-inverse: #ffffff;
+  --ns-background-highlight: #0f41f3;
+  --ns-background-glass-primary: #ffffff1a;
+  --ns-background-glass-secondary: #ffffff0d;
+  --ns-background-glass-dark: #1a1a2acc;
+  --ns-background-glass-deep-blue: #0e0e17cc;
+  --ns-background-glass-blue: #00013bcc;
+  --ns-background-glass-green: #0f1714cc;
+  --ns-background-glass-purple: #0b0313cc;
+  --ns-background-glass-orange: #100902cc;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --ns-content-primary: #ffffff;
+  --ns-content-secondary: #ffffffe6;
+  --ns-content-tertiary: #ffffff80;
+  --ns-content-inverse: #0c0c0e;
+  --ns-content-highlight: #0f41f3;
+  --ns-content-link: #0f98f3;
+
+  --ns-border-primary: #ffffff33;
+  --ns-border-secondary: #ffffff1a;
+  --ns-border-hover: #ffffff66;
+  --ns-border-glass-primary: #ffffff1a;
+  --ns-border-glass-secondary: #ffffff0d;
+
+  /* --- shadcn bridge, mapped onto the nscale palette --- */
+  --background: var(--ns-background-primary);
+  --foreground: var(--ns-content-secondary);
+  --card: var(--ns-background-secondary);
+  --card-foreground: var(--ns-content-primary);
+  --popover: var(--ns-background-secondary);
+  --popover-foreground: var(--ns-content-primary);
+  --primary: var(--ns-background-highlight);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ns-background-glass-primary);
+  --secondary-foreground: var(--ns-content-primary);
+  --muted: var(--ns-background-glass-secondary);
+  --muted-foreground: var(--ns-content-tertiary);
+  --accent: var(--ns-background-glass-primary);
+  --accent-foreground: var(--ns-content-primary);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: var(--ns-border-secondary);
+  --input: var(--ns-border-primary);
+  --ring: var(--ns-border-hover);
+  --radius: 0.625rem;
+
+  --sidebar: var(--ns-background-secondary);
+  --sidebar-foreground: var(--ns-content-secondary);
+  --sidebar-primary: var(--ns-background-highlight);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--ns-background-glass-primary);
+  --sidebar-accent-foreground: var(--ns-content-primary);
+  --sidebar-border: var(--ns-border-secondary);
+  --sidebar-ring: var(--ns-border-hover);
 }
 
 @layer base {
@@ -122,9 +149,133 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--ns-background-primary);
+    color: var(--ns-content-secondary);
+    font-family: var(--font-dm-sans), Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5rem;
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  /* .padding-global — 1.5rem, 1.25rem at <=767px */
+  .ns-padding-global {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  @media screen and (max-width: 767px) {
+    .ns-padding-global {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+  }
+
+  /* .container-large */
+  .ns-container {
+    width: 100%;
+    max-width: 77rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* .section-separator — a real 1px element between sections, not a border */
+  .ns-separator {
+    width: 100%;
+    height: 1px;
+    background-color: var(--ns-border-secondary);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Global rules from the site's inline <style> embed (div.global-css).
+   These are NOT in the Webflow stylesheet and were easy to miss.
+
+   NOTE: the page has a second inline <style> block, but every rule in it is
+   nested under `.wf-design-mode` — Webflow's editor-only class, never present
+   on the live site. Those rules are deliberately NOT reproduced here.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  /* Crisper text rendering, applied to body on the source site */
+  .ns-font-smoothing {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings inherit weight; the text-* classes set it explicitly */
+  .ns-scope :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: inherit;
+  }
+
+  /* Full-viewport hero wrapper */
+  .ns-section-full-height {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Vertical dashed rule overlay -------------------------------------------
+     .section_lines: absolute inset 0, z-index -1, max-width 80rem (1280px),
+     centred, 12px inline padding (8px at <=767px), flex + space-between.
+     Five children at desktop; at <=767px only the two `.is-mobile` ones show. */
+  .ns-section-lines {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    max-width: 80rem;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  @media screen and (max-width: 767px) {
+    .ns-section-lines {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  .ns-section-lines-line {
+    width: 1px;
+    height: 100%;
+    opacity: 0.5;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--ns-border-primary) 0px,
+      var(--ns-border-primary) 4px,
+      transparent 4px,
+      transparent 8px
+    );
+  }
+  @media screen and (max-width: 767px) {
+    .ns-section-lines-line {
+      display: none;
+    }
+    .ns-section-lines-line.is-mobile {
+      display: block;
+    }
+  }
+
+  /* Visibility helpers — note the exact, slightly overlapping breakpoints
+     used by the source (768 / 769-991 / 992), not the Webflow defaults. */
+  @media (max-width: 768px) {
+    .ns-hide-mobile { display: none; }
+  }
+  @media (min-width: 769px) and (max-width: 991px) {
+    .ns-hide-tablet { display: none; }
+  }
+  @media (min-width: 992px) {
+    .ns-hide-desktop { display: none; }
   }
 }
