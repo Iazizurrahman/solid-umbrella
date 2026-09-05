@@ -6,9 +6,9 @@
 /* ---------------------------------------------------------------------------
  * BRAND IDENTITY
  *
- * DAITA's own marks. These files are not in the repo yet; a missing asset keeps
- * pointing at its intended path rather than being substituted, so dropping them into
- * `public/images/daita/` makes every slot resolve with no code change.
+ * DAITA's own marks. Anything still missing keeps pointing at its intended path rather
+ * than being substituted, so dropping the file into `public/images/daita/` makes that
+ * slot resolve with no code change.
  *
  * Deliberately NOT repointed at the original site's assets: a logo, favicon and OG
  * image are brand identity, not interchangeable media. Serving the previous company's
@@ -17,8 +17,17 @@
 export const BRAND_ASSETS = "/images/daita";
 
 export const ASSETS = {
-  logo: `${BRAND_ASSETS}/logo.svg`,
-  logoWhite: `${BRAND_ASSETS}/logo-white.svg`,
+  /**
+   * PNG, not SVG. daitalabs.com serves the mark as a 1900x1652 palette PNG with
+   * transparency ("D[AI]TA logo_white" in the Framer source); no vector version is
+   * published. Both names currently resolve to that same white mark — the site ships
+   * only the one variant.
+   *
+   * Note this is the mark alone. The live header pairs it with the word "DAITA" set as
+   * live text: Inter 500, 16px, letter-spacing -0.05em.
+   */
+  logo: `${BRAND_ASSETS}/logo.png`,
+  logoWhite: `${BRAND_ASSETS}/logo-white.png`,
   favicon: `${BRAND_ASSETS}/favicon.png`,
   ogImage: `${BRAND_ASSETS}/og-image.png`,
   /** Tiruppur cutting floor. Still missing; see MEDIA for what the slots actually use. */

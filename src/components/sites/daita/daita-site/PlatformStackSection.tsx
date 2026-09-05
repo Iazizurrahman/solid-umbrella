@@ -392,30 +392,63 @@ export function PlatformStackSection({
                       {layer.description}
                     </p>
 
-                    <ul role="list" className="m-0 flex list-none flex-col gap-4 p-0">
-                      {layer.bullets.map((bullet) => (
-                        <li
-                          key={bullet.lead}
-                          className="text-[1rem] leading-[1.5rem] text-ns-content-secondary"
-                        >
-                          <span className="font-semibold text-ns-content-primary">
-                            {bullet.lead}
-                          </span>{" "}
-                          {bullet.text}
-                        </li>
-                      ))}
-                    </ul>
+                    {/*
+                      Detail panel — collapsed unless this card is the active one.
+                      Same `activeIndex` that drives the Rive layer highlight, so the
+                      expand and the artwork are one state: hovering a card lights its
+                      layer and opens its detail together, and only ever one at a time.
 
-                    {/* Record data, in the site's mono/data treatment. */}
-                    <div className="flex flex-col gap-2 rounded-[6px] bg-ns-bg-glass-secondary p-4">
-                      {layer.visual.map((line) => (
-                        <div
-                          key={line}
-                          className="font-mono text-[0.75rem] leading-[1.25rem] tracking-[0.02em] text-ns-content-tertiary"
-                        >
-                          {line}
+                      Timing is the card's own recorded transition
+                      (`all .2s cubic-bezier(.215,.61,.355,1)` on `.services-stack2_item`).
+                      The 0fr -> 1fr grid technique is the one the source's own mobile
+                      accordion uses, so no fixed pixel height is invented.
+
+                      `-mb-4` while collapsed cancels the card's `gap-4` above a
+                      zero-height child, so a collapsed card measures exactly
+                      heading + summary.
+                    */}
+                    <div
+                      data-expand=""
+                      aria-hidden={activeIndex !== index}
+                      className={cn(
+                        "grid overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)]",
+                        activeIndex === index
+                          ? "grid-rows-[1fr] opacity-100"
+                          : "-mb-4 grid-rows-[0fr] opacity-0",
+                      )}
+                    >
+                      <div className="min-h-0 overflow-hidden">
+                        <div className="flex flex-col gap-4">
+                          <ul
+                            role="list"
+                            className="m-0 flex list-none flex-col gap-4 p-0"
+                          >
+                            {layer.bullets.map((bullet) => (
+                              <li
+                                key={bullet.lead}
+                                className="text-[1rem] leading-[1.5rem] text-ns-content-secondary"
+                              >
+                                <span className="font-semibold text-ns-content-primary">
+                                  {bullet.lead}
+                                </span>{" "}
+                                {bullet.text}
+                              </li>
+                            ))}
+                          </ul>
+
+                          {/* Record data, in the site's mono/data treatment. */}
+                          <div className="flex flex-col gap-2 rounded-[6px] bg-ns-bg-glass-secondary p-4">
+                            {layer.visual.map((line) => (
+                              <div
+                                key={line}
+                                className="font-mono text-[0.75rem] leading-[1.25rem] tracking-[0.02em] text-ns-content-tertiary"
+                              >
+                                {line}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </a>
                 ))}

@@ -85,6 +85,56 @@ const BOTTOM_LINKS: FooterLink[] = [];
 const LISTS_GRID =
   "grid grid-cols-2 grid-rows-[auto] items-start justify-between gap-[clamp(1rem,5vw,4.5rem)] max-[767px]:gap-12";
 
+/**
+ * `.footer_logo-large` — the full-bleed wordmark closing the footer.
+ *
+ * Set as live text rather than an image. The brand mark published at
+ * daitalabs.com is a near-square glyph (1900x1652), so stretching it across the
+ * 1232px content column would distort it badly; the slot was designed for a wide
+ * wordmark.
+ *
+ * Rendered as SVG text so it behaves exactly as the original wordmark did: a fixed
+ * viewBox with `width: 100%`, so it fills the content column and scales with it at
+ * every breakpoint.
+ *
+ * Sizing is measured, not guessed. DM Sans advance widths for D-A-I-T-A total 2796
+ * units at 1000 upem, so 440px is the size at which the word spans exactly 1232px with
+ * no tracking; cap height there is 0.7em = 308px, which sets the viewBox height.
+ * `textLength` + `lengthAdjust="spacing"` then pin the width for real — if the webfont
+ * ever fails and Arial substitutes, the difference is absorbed as tracking rather than
+ * leaving the wordmark short of the column edge. Glyphs are never distorted.
+ *
+ * Note the block is 1232x308 (4:1) where the previous wordmark was 1232x186 (6.6:1):
+ * five wide letters simply occupy a taller box than six narrow custom-drawn ones at the
+ * same width. Matching the old height instead would need ~0.46em of tracking.
+ */
+function DaitaWordmark() {
+  return (
+    <svg
+      viewBox="0 0 1232 308"
+      width="100%"
+      role="img"
+      aria-label="DAITA"
+      className="block h-auto w-full text-ns-content-primary"
+    >
+      <text
+        x="0"
+        y="308"
+        textLength="1232"
+        lengthAdjust="spacing"
+        fill="currentColor"
+        style={{
+          fontFamily: "var(--font-dm-sans), Arial, sans-serif",
+          fontSize: "440px",
+          fontWeight: 500,
+        }}
+      >
+        DAITA
+      </text>
+    </svg>
+  );
+}
+
 /** `.footer_nav_list` — one column's links. */
 function FooterNavList({ links }: { links: FooterLink[] }) {
   return (
@@ -240,13 +290,7 @@ export function SiteFooter() {
       <Container>
         {/* .footer_logo-large */}
         <div className="mb-10 flex w-full items-center justify-center max-[767px]:mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element -- see above. */}
-          <img
-            src={ASSETS.logoWhite}
-            alt=""
-            aria-hidden="true"
-            className="w-full"
-          />
+          <DaitaWordmark />
         </div>
       </Container>
 
