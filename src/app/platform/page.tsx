@@ -4,6 +4,8 @@ import { HeroSection } from "@/components/sites/daita/daita-site/HeroSection";
 import { InfrastructureSection } from "@/components/sites/daita/daita-site/InfrastructureSection";
 import { PlatformStackSection } from "@/components/sites/daita/daita-site/PlatformStackSection";
 import { PlatformStackMobileSection } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
+import { TnaProvider } from "@/components/sites/daita/daita-site/TnaProvider";
+import { TnaEngineSection } from "@/components/sites/daita/daita-site/TnaEngineSection";
 import { GuidelinesSection } from "@/components/sites/daita/daita-site/GuidelinesSection";
 import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNewsSection";
 import { TrustedLogosSection } from "@/components/sites/daita/daita-site/TrustedLogosSection";
@@ -325,6 +327,15 @@ export default function PlatformPage() {
             slides={PRODUCT_SLIDES}
           />
         </Anchor>
+        <SectionSeparator />
+
+        {/* The TNA Engine, playable. One provider wraps it so a later addition on this
+            page can drive the same grid rather than keeping a second copy of the data. */}
+        <TnaProvider>
+          <Anchor id="tna-engine">
+            <TnaEngineSection />
+          </Anchor>
+        </TnaProvider>
         <SectionSeparator />
 
         {/* Three points, then the worked SOPs — one idea, two blocks, as the
