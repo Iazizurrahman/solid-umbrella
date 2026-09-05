@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Noto_Sans_Devanagari, Noto_Sans_Tamil } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -29,6 +30,28 @@ const dmMono = localFont({
     { path: "../../public/fonts/DMMono-Regular.ttf", weight: "400", style: "normal" },
     { path: "../../public/fonts/DMMono-Medium.ttf", weight: "500", style: "normal" },
   ],
+});
+
+/**
+ * Neither DM Sans nor DM Mono carries a single Tamil or Devanagari glyph — every
+ * codepoint in "தமிழ் · हिन्दी" is absent from both cmaps, so the browser would fall
+ * through to whatever the OS happens to have. These two Noto faces exist only to
+ * cover that one caption line; they are never applied to the body stack, and the
+ * subsets are pinned so no Latin duplicate ships.
+ *
+ * Latin still comes from DM Sans: the caption's family list puts --font-dm-sans
+ * first, and per-glyph fallback picks up Noto only for the Indic runs.
+ */
+const notoTamil = Noto_Sans_Tamil({
+  variable: "--font-noto-tamil",
+  subsets: ["tamil"],
+  display: "swap",
+});
+
+const notoDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-noto-devanagari",
+  subsets: ["devanagari"],
+  display: "swap",
 });
 
 /**
@@ -74,7 +97,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${dmMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${dmMono.variable} ${notoTamil.variable} ${notoDevanagari.variable} h-full antialiased`}
     >
       <body className="min-h-full">{children}</body>
     </html>

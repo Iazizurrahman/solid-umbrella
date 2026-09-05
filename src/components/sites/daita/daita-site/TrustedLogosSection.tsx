@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 
@@ -9,48 +10,97 @@ import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
  * garment exporters and buying offices across South India".
  */
 
-interface IntegrationRow {
-  /** `.text-nav-label-tiny` row label. */
-  label: string;
-  items: readonly string[];
-}
+const LOGO_DIR = "/images/daita/integrations";
 
 /**
- * The nine source partner logo SVGs went with the rest of the pre-rebrand assets, and DAITA
- * holds no client logos it has written permission to show — so the slot keeps its job
- * (reassurance that nothing has to change) with integrations rendered as text.
+ * A named integration is drawn one of two ways.
+ *
+ * `logo` — official artwork, downloaded from the owner's own brand page or their own
+ * CDN, living in `public/images/daita/integrations/`. Nothing here came from an icon
+ * pack or a logo-aggregator CDN.
+ *
+ * `pill` — everything else: marks whose owners bot-block their asset hosts, marks with
+ * no official monochrome variant, and the many items that simply have no logo at all
+ * ("voice notes", "cut report", "in-house ERP").
  */
-const INTEGRATION_ROWS: readonly IntegrationRow[] = [
+type Integration =
+  | {
+      kind: "logo";
+      /** Alt text, and the tooltip on hover. */
+      name: string;
+      file: string;
+      /**
+       * Box height in px, tuned per mark so the *ink* lands at a consistent optical
+       * height rather than the boxes lining up. Measured ink-to-box ratios (alpha
+       * bounding box over a 400px render) are recorded beside each entry: a square
+       * glyph that fills its box needs a much smaller box than a wordmark whose
+       * artboard is mostly air.
+       */
+      height: number;
+    }
+  | { kind: "pill"; name: string };
+
+const logo = (name: string, file: string, height: number): Integration => ({
+  kind: "logo",
+  name,
+  file,
+  height,
+});
+
+const pill = (name: string): Integration => ({ kind: "pill", name });
+
+interface IntegrationCard {
+  /** `.text-nav-label-tiny` card header. */
+  label: string;
+  items: readonly Integration[];
+  /** Optional line under the item wall — only Messaging carries one. */
+  caption?: string;
+}
+
+const CARDS: readonly IntegrationCard[] = [
   {
     label: "Messaging",
     items: [
-      "WhatsApp Business",
-      "voice notes",
-      "Gmail",
-      "Outlook",
-      "IMAP",
-      "SMS",
-      "photos",
-      "Tamil",
-      "Hindi",
-      "English",
+      // ink 1.000 — Meta's own monochrome glyph, artwork fills the artboard edge to edge.
+      logo("WhatsApp Business", "whatsapp.svg", 20),
+      pill("voice notes"),
+      // ink 0.695 — the M sits in a 96px square with generous padding.
+      logo("Gmail", "gmail.png", 25),
+      // Outlook's only official artwork is the full-colour envelope; it collapses to an
+      // unreadable slab in monochrome and Microsoft publishes no mono variant, so it
+      // takes a pill rather than a broken mark.
+      pill("Outlook"),
+      pill("IMAP"),
+      pill("SMS"),
+      pill("photos"),
     ],
+    caption: "தமிழ் · हिन्दी · English",
   },
   {
-    label: "ERP & systems",
+    label: "ERP & Systems",
+    // SAP, Oracle and NetSuite all serve their official logo files from hosts that
+    // refuse non-browser clients (403). Rather than pull them from a third-party
+    // mirror, they take pills.
     items: [
-      "SAP",
-      "Oracle",
-      "Dynamics 365",
-      "NetSuite",
-      "Odoo",
-      "Tally",
-      "Zoho",
-      "in-house ERP",
-      "FastReact",
+      pill("SAP"),
+      pill("Oracle"),
+      // ink 1.000 — the D365 swoosh fills its 96px artboard.
+      logo("Dynamics 365", "dynamics-365.svg", 19),
+      pill("NetSuite"),
+      // ink 0.398 — an all-lowercase wordmark with no ascenders on a tall artboard.
+      logo("Odoo", "odoo.svg", 32),
+      // ink 1.000 — script wordmark plus the "power of simplicity" tagline lockup.
+      logo("Tally", "tally.svg", 26),
+      // ink 0.965 — four-square mark with the wordmark tucked underneath.
+      logo("Zoho", "zoho.svg", 24),
+      pill("in-house ERP"),
+      // ink 0.345 — a very wide all-caps wordmark; the white cut ships ready to use.
+      logo("FastReactPlan", "fastreact.webp", 28),
     ],
   },
   {
+    // Documents are formats, not products. None of them has a logo and none should
+    // acquire one — pills throughout.
     label: "Documents",
     items: [
       "PO PDF",
@@ -62,9 +112,59 @@ const INTEGRATION_ROWS: readonly IntegrationRow[] = [
       "floor photos",
       "scans",
       "trim card",
-    ],
+    ].map(pill),
   },
 ];
+
+/** `.text-nav-label-tiny` — 10px/12px, 600, uppercase, --content--tertiary. */
+const LABEL = "text-[0.625rem] leading-3 font-semibold uppercase";
+
+/**
+ * Text fallback for anything without official artwork. The spec is fixed: 1px border at
+ * 12% white, fill at 6% white, mono at the label size — deliberately quieter than a real
+ * mark so the wall reads as "logos, plus the rest" rather than two competing treatments.
+ */
+function Pill({ name }: { name: string }) {
+  return (
+    <span
+      className={cn(
+        "flex h-8 items-center rounded-[4px] border border-[#ffffff1f] bg-[#ffffff0f] px-[0.625rem] font-mono tracking-[0.02em] text-ns-content-primary",
+        LABEL,
+      )}
+    >
+      {name}
+    </span>
+  );
+}
+
+/**
+ * Official artwork rendered monochrome white.
+ *
+ * `brightness(0) invert(1)` flattens whatever the file contains — colour SVG, colour
+ * PNG, or an already-white cut — to solid white while leaving the alpha channel intact,
+ * so one rule covers every source format without editing anyone's artwork on disk.
+ *
+ * WhatsApp is the exception the brand guidelines demand, and it needs no exception here:
+ * Meta publishes a monochrome `currentColor` variant of the telephone mark, which is
+ * what ships in `whatsapp.svg`. Nothing is being recoloured — a colourless mark is
+ * simply being given a colour, which is the variant's whole purpose.
+ */
+function LogoMark({ name, file, height }: { name: string; file: string; height: number }) {
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element -- fixed-size brand artwork,
+       mostly SVG; next/image cannot optimise SVG and its wrapper would fight the
+       per-mark height that keeps the optical sizes even. */
+    <img
+      src={`${LOGO_DIR}/${file}`}
+      alt={name}
+      title={name}
+      loading="lazy"
+      decoding="async"
+      style={{ height: `${height}px` }}
+      className="w-auto opacity-60 [filter:brightness(0)_invert(1)] transition-opacity duration-200 group-hover/wall:opacity-60 hover:opacity-100"
+    />
+  );
+}
 
 /** `.section_padding` (base 7.5rem, 5.5rem at <=767px) — a real spacer div, not padding. */
 function SectionPadding() {
@@ -85,9 +185,9 @@ export function TrustedLogosSection() {
       <SectionPadding />
 
       <Container>
-        <div>
-          {/* .section_partner-logos */}
-          <div className="mx-auto flex max-w-[958px] flex-col items-center justify-start gap-6 text-center max-[767px]:gap-10">
+        <div className="flex flex-col items-center gap-10 max-[767px]:gap-8">
+          {/* .section_partner-logos — the headline block keeps its centred 958px measure. */}
+          <div className="mx-auto flex max-w-[958px] flex-col items-center justify-start gap-6 text-center">
             {/* .text-heading-h5-mobile */}
             <h2 className="text-[1.5rem] font-medium leading-[2rem] text-ns-content-primary">
               Works with the systems your factories already run
@@ -99,33 +199,53 @@ export function TrustedLogosSection() {
                 nothing has to be migrated.
               </p>
             </div>
+          </div>
 
-            {/* .partner-logos_list-wrap — flex-wrap + centre justification lets each row
-                reflow on its own at every breakpoint; nothing is pinned per line. */}
-            <div className="flex w-full max-w-[60rem] flex-col items-center justify-center gap-10">
-              {INTEGRATION_ROWS.map((row) => (
-                <div
-                  key={row.label}
-                  className="flex w-full flex-col items-center justify-center gap-6"
-                >
-                  {/* `.text-nav-label-tiny` — 10px/12px, 600, uppercase, --content--tertiary,
-                      the same treatment as the header dropdown and hero eyebrow labels. */}
-                  <p className="text-[0.625rem] leading-3 font-semibold text-ns-content-tertiary uppercase">
-                    {row.label}
-                  </p>
-                  <div className="flex flex-wrap items-center justify-center gap-6">
-                    {row.items.map((item) => (
-                      <span
-                        key={item}
-                        className="text-[0.875rem] leading-[1.25rem] text-ns-content-primary"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
+          {/* Three equal cards in the site's glass-card treatment — the same
+              `rounded-[8px]` + glass border/fill the video cards use over colour.
+              `items-stretch` via grid keeps the three the same height whatever the
+              item wall wraps to; they stack to one column at mobile. */}
+          <div className="grid w-full grid-cols-3 gap-4 max-[767px]:grid-cols-1">
+            {CARDS.map((card) => (
+              <div
+                key={card.label}
+                className="flex flex-col gap-6 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-6 max-[767px]:p-4"
+              >
+                <p className={cn(LABEL, "text-ns-content-tertiary")}>{card.label}</p>
+
+                {/* The wall is a plain wrapping row: marks and pills share one flow so a
+                    card reads as a single list, not a logo strip with a caption of
+                    leftovers. `items-center` is what makes the tuned heights line up on
+                    a shared centre line. */}
+                <div className="flex flex-1 flex-wrap content-start items-center gap-x-6 gap-y-4">
+                  {card.items.map((item) =>
+                    item.kind === "logo" ? (
+                      <LogoMark
+                        key={item.name}
+                        name={item.name}
+                        file={item.file}
+                        height={item.height}
+                      />
+                    ) : (
+                      <Pill key={item.name} name={item.name} />
+                    ),
+                  )}
                 </div>
-              ))}
-            </div>
+
+                {card.caption ? (
+                  /* Tamil and Devanagari are absent from DM Sans and DM Mono, so this one
+                     line — and only this line — adds the two Noto faces after DM Sans.
+                     Per-glyph fallback keeps "English" and the separators in the site
+                     face and pulls only the Indic runs from Noto. */
+                  <p
+                    lang="mul"
+                    className="font-[family-name:var(--font-dm-sans),var(--font-noto-tamil),var(--font-noto-devanagari)] text-[0.875rem] leading-[1.5rem] text-ns-content-secondary"
+                  >
+                    தமிழ் · हिन्दी · English
+                  </p>
+                ) : null}
+              </div>
+            ))}
           </div>
         </div>
       </Container>

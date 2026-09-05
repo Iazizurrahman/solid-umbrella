@@ -15,6 +15,7 @@ import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 import { ArrowRightIcon } from "@/components/sites/daita/shared/icons";
 import { cn } from "@/lib/utils";
+import { STACK_PANELS } from "./StackPanels";
 import type { PlatformLayer } from "@/types/daita";
 
 /**
@@ -360,12 +361,54 @@ export function PlatformStackSection({
 
             {/* .services-stack2_wrap */}
             <div className="grid w-full grid-cols-2 gap-0">
-              {/* .services-stack2_rive-canvas — deliberately overflows its column */}
-              <canvas
-                ref={setCanvasRef}
-                aria-hidden="true"
-                className="ml-[-15%] block h-full min-h-[1000px] w-[140%]"
-              />
+              {/*
+                Left column: the Rive artboard, with the active card's product-UI
+                panel beneath it. Rive shows which layer is live; the panel shows
+                that card's worked example. Both are driven by the same
+                `activeIndex`, so they never disagree.
+              */}
+              <div className="relative flex min-w-0 flex-col gap-6">
+                {/*
+                  .services-stack2_rive-canvas — deliberately overflows its column.
+                  The source's min-height is 1000px, sized for a column that held
+                  the canvas alone beside four fully-expanded cards. This column
+                  now also carries a ~400px panel, and the cards collapse to
+                  ~740px total, so 1000px pushed the panel entirely below the last
+                  card. 640px keeps canvas + panel (~1070px) in proportion with
+                  the card column and puts the panel beside the cards it belongs
+                  to. Fit.Contain means the artboard just scales; nothing crops.
+                */}
+                <canvas
+                  ref={setCanvasRef}
+                  aria-hidden="true"
+                  className="ml-[-15%] block h-full min-h-[640px] w-[140%]"
+                />
+
+                {/*
+                  Panels are stacked and cross-faded rather than swapped, so the
+                  column never reflows as the active card changes. The grid holds
+                  the height of the tallest panel; each child sits in cell 1/1.
+                  Timing matches the card highlight exactly:
+                  .2s cubic-bezier(.215,.61,.355,1), the `.services-stack2_item`
+                  transition recorded from the source.
+                */}
+                <div className="grid pr-4">
+                  {STACK_PANELS.map(({ id, Panel }, index) => (
+                    <div
+                      key={id}
+                      aria-hidden={activeIndex !== index}
+                      className={cn(
+                        "col-start-1 row-start-1 transition-all duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)]",
+                        activeIndex === index
+                          ? "opacity-100"
+                          : "pointer-events-none opacity-0",
+                      )}
+                    >
+                      <Panel />
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* .services-stack2_items-wrap */}
               <div className="relative z-[1] flex w-full flex-col items-stretch justify-center gap-6 pl-4">
