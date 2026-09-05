@@ -79,7 +79,7 @@ export function HeaderButton({
    --------------------------------------------------------------------------- */
 
 const PANEL_BASE =
-  "flex rounded-[10px] border border-[#ffffff33] border-r-[#ffffff1a] shadow-[0_20px_20px_#0000000d] transition-[opacity,translate] duration-200";
+  "flex rounded-[10px] border border-ns-border-primary border-r-ns-border-secondary shadow-[0_20px_20px_#0000000d] transition-[opacity,translate] duration-200";
 
 function panelState(open: boolean) {
   return open
@@ -136,7 +136,7 @@ function MegaPanel({
           --border--primary (#ffffff33), the other three are #ffffff1a. */}
       <div
         data-menu-services-block=""
-        className="grid grid-cols-5 gap-4 rounded-[8px] border border-[#ffffff1a] border-r-ns-border-primary bg-ns-bg-glass-dark p-4"
+        className="grid grid-cols-5 gap-4 rounded-[8px] border border-ns-border-secondary border-r-ns-border-primary bg-ns-bg-glass-dark p-4"
       >
         {/* .header_nav_services_all-col — the heading column. The source pairs
             the heading with a ghost-small link; this menu has a single link and

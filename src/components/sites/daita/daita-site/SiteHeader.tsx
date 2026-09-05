@@ -13,6 +13,7 @@ import {
   ProductDropdown,
 } from "@/components/sites/daita/daita-site/HeaderDropdowns";
 import { MobileMenu } from "@/components/sites/daita/daita-site/MobileMenu";
+import { ThemeToggle } from "@/components/sites/daita/daita-site/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 /**
@@ -246,7 +247,11 @@ export function SiteHeader() {
             </div>
 
             {/* .header_nav_cta-wrap */}
-            <div className="max-[991px]:flex max-[991px]:items-center max-[991px]:justify-start max-[991px]:gap-4">
+            <div className="flex items-center gap-4 max-[991px]:justify-start">
+              {/* Hidden below 992 so the mobile bar keeps the CTA and the hamburger at
+                  their recorded positions; the mobile menu carries its own copy. */}
+              <ThemeToggle className="max-[991px]:hidden" />
+
               <a href={CTA.href}>
                 <HeaderButton label={CTA.label} variant="glass" />
               </a>
@@ -260,9 +265,9 @@ export function SiteHeader() {
                 onClick={() => setMobileOpen((current) => !current)}
                 className="relative hidden h-4 w-4 items-center justify-center bg-transparent p-0 max-[991px]:flex"
               >
-                <span className="absolute h-px w-full -translate-y-1.5 bg-white" />
-                <span className="absolute h-px w-full bg-white" />
-                <span className="absolute h-px w-full translate-y-1.5 bg-white" />
+                <span className="absolute h-px w-full -translate-y-1.5 bg-ns-content-primary" />
+                <span className="absolute h-px w-full bg-ns-content-primary" />
+                <span className="absolute h-px w-full translate-y-1.5 bg-ns-content-primary" />
               </button>
             </div>
           </div>

@@ -146,6 +146,102 @@
   --sidebar-ring: var(--ns-border-hover);
 }
 
+/* ---------------------------------------------------------------------------
+   Sand theme
+   The second palette from docs/DAITA_Sand_Site.html: ink #101010 on sand
+   #E9E1D1, with #5C5648 as the muted tone and #F4F3EF as the raised surface.
+
+   Only the RAW `--ns-*` values are redefined. The `@theme inline` mapping above
+   is untouched, so every component keeps referencing the same semantic token and
+   nothing in layout, spacing, type scale or motion changes. The dark palette is
+   still the default: this block needs `data-theme="sand"` on <html>, which the
+   bootstrap script in layout.tsx sets before first paint.
+
+   Where the dark theme layers white at an alpha, this layers ink at the same
+   alpha, so the surface hierarchy keeps its exact structure. The two exceptions
+   are `--ns-border-secondary`, which takes the Sand bundle's own
+   `--line: rgba(16,16,16,.14)` because ink at 10% is too faint to read on sand,
+   and the tinted glass fills, which become warm equivalents rather than the dark
+   theme's near-black ones.
+   --------------------------------------------------------------------------- */
+
+:root[data-theme="sand"] {
+  --ns-background-primary: #e9e1d1;
+  --ns-background-secondary: #f4f3ef;
+  --ns-background-inverse: #101010;
+  --ns-background-highlight: #0f41f3;
+  --ns-background-glass-primary: #1010101a;
+  --ns-background-glass-secondary: #1010100d;
+  --ns-background-glass-dark: #f4f3efcc;
+  --ns-background-glass-deep-blue: #dfdccfcc;
+  --ns-background-glass-blue: #d8dcebcc;
+  --ns-background-glass-green: #d9e2d3cc;
+  --ns-background-glass-purple: #e2d9e0cc;
+  --ns-background-glass-orange: #f0dfc6cc;
+
+  --ns-content-primary: #101010;
+  --ns-content-secondary: #101010e6;
+  --ns-content-tertiary: #5c5648;
+  --ns-content-inverse: #f4f3ef;
+  --ns-content-highlight: #0f41f3;
+  --ns-content-link: #1b3fa8;
+
+  --ns-border-primary: #10101033;
+  --ns-border-secondary: #10101024;
+  --ns-border-hover: #10101066;
+  --ns-border-glass-primary: #10101024;
+  --ns-border-glass-secondary: #10101014;
+
+  /* shadcn bridge — `--destructive` is the only one that needs a warmer cut, the
+     rest resolve through the `--ns-*` values above. */
+  --destructive: oklch(0.52 0.17 27);
+
+  /*
+    Typography. `--font-dm-sans` and `--font-dm-mono` are re-pointed rather than
+    replaced at the utility level, so `font-sans` and `font-mono` switch
+    everywhere at once. next/font declares these on a class on <html>; this
+    selector is (0,2,0) against that class's (0,1,0), so it wins.
+  */
+  --font-dm-sans: var(--font-plex-sans);
+  --font-dm-mono: var(--font-plex-mono);
+}
+
+/*
+  Display type. Cormorant Garamond is a serif with a much smaller x-height than
+  DM Sans, so at the same size tokens it reads considerably lighter. That is the
+  Sand bundle's intent; no size, leading or tracking token is changed.
+*/
+:root[data-theme="sand"] :is(h1, h2, h3) {
+  font-family: var(--font-cormorant), Georgia, "Times New Roman", serif;
+}
+
+/*
+  Integration marks are forced to white by a filter so one rule can cover colour
+  SVG, colour PNG and already-white artwork. White on sand is invisible, so the
+  warm theme drops the inversion and renders them ink instead.
+*/
+/*
+  The three full-bleed brand-gradient panels (hero, who it is for, integrations) are
+  hardcoded `linear-gradient(45deg, #0f41f3 16%, #289dd0)` because they are the brand,
+  not a token. Ink type on that blue is unreadable, so the warm theme restates the same
+  45deg / 16% gradient in sand. The dark theme is untouched.
+*/
+:root[data-theme="sand"] [data-brand-gradient] {
+  background-image: linear-gradient(45deg, #ded4bd 16%, #f4f3ef);
+}
+/*
+  The Rive artboard is white line-art with a blue highlight layer, authored for a dark
+  ground; on sand it is all but invisible. `invert(1) hue-rotate(180deg)` flips the
+  lightness while returning the hue to roughly where it started, so the line-work goes
+  ink and the highlight stays blue. It is a stopgap: the real fix is a light artboard.
+*/
+:root[data-theme="sand"] canvas[data-rive] {
+  filter: invert(1) hue-rotate(180deg);
+}
+:root[data-theme="sand"] [data-mono-logo] {
+  filter: brightness(0);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

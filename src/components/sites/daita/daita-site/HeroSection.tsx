@@ -97,6 +97,7 @@ export function HeroSection({
       {/* .section_color — data-wf--section_color--variant="gradient" */}
       <div
         aria-hidden="true"
+        data-brand-gradient=""
         className="absolute inset-0 -z-30 h-full w-full bg-[linear-gradient(45deg,#0f41f3_16%,#289dd0)]"
       />
 

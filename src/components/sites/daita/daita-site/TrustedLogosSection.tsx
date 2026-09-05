@@ -131,7 +131,7 @@ function Pill({ name }: { name: string }) {
   return (
     <span
       className={cn(
-        "flex h-8 items-center rounded-[4px] border border-[#ffffff1f] bg-[#ffffff0f] px-[0.625rem] font-mono tracking-[0.02em] text-ns-content-primary",
+        "flex h-8 items-center rounded-[4px] border border-ns-content-primary/12 bg-ns-content-primary/6 px-[0.625rem] font-mono tracking-[0.02em] text-ns-content-primary",
         LABEL,
       )}
     >
@@ -163,6 +163,9 @@ function LogoMark({ name, file, height }: { name: string; file: string; height: 
       title={name}
       loading="lazy"
       decoding="async"
+      /* The Sand theme keys off this to drop the inversion — white marks are
+         invisible on sand. See globals.css. */
+      data-mono-logo=""
       className={cn(
         "w-auto opacity-60 [filter:brightness(0)_invert(1)] transition-opacity duration-200 hover:opacity-100",
         height,
@@ -263,6 +266,7 @@ export function TrustedLogosSection() {
       {/* .section_color, variant "gradient" */}
       <div
         aria-hidden="true"
+        data-brand-gradient=""
         className="absolute inset-0 -z-[3] h-full w-full bg-[linear-gradient(45deg,#0f41f3_16%,#289dd0)]"
       />
     </section>

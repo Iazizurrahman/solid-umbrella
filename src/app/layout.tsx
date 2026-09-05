@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Devanagari, Noto_Sans_Tamil } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  Noto_Sans_Devanagari,
+  Noto_Sans_Tamil,
+} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -55,6 +61,44 @@ const notoDevanagari = Noto_Sans_Devanagari({
 });
 
 /**
+ * The Sand theme's three faces. They are loaded unconditionally because the theme is a
+ * runtime toggle with no server round trip — a visitor who picked Sand last time gets it
+ * before first paint, so the faces have to already be in the document.
+ *
+ * Under `[data-theme="sand"]` the stylesheet re-points `--font-dm-sans` and
+ * `--font-dm-mono` at these, which switches every component that uses the `font-sans`
+ * or `font-mono` utility without touching a single component. Cormorant is applied to
+ * headings only, by a theme-scoped rule.
+ */
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-plex-sans",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+});
+
+/**
+ * Applies the stored theme before first paint. Without it a visitor on Sand gets a
+ * flash of the dark palette on every navigation, because the choice lives in
+ * localStorage and the pages are statically rendered.
+ */
+const THEME_BOOTSTRAP = `try{var t=localStorage.getItem("daita-theme");if(t==="sand"){document.documentElement.dataset.theme="sand"}}catch(e){}`;
+
+/**
  * Brand assets live under /images/daita/ and are not yet in the repo. Per the rebrand
  * brief, missing assets keep pointing at their intended path rather than being
  * substituted — drop the files in and these resolve with no code change.
@@ -97,8 +141,21 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${dmMono.variable} ${notoTamil.variable} ${notoDevanagari.variable} h-full antialiased`}
+      className={[
+        dmSans.variable,
+        dmMono.variable,
+        notoTamil.variable,
+        notoDevanagari.variable,
+        cormorant.variable,
+        plexSans.variable,
+        plexMono.variable,
+        "h-full antialiased",
+      ].join(" ")}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+      </head>
       <body className="min-h-full">{children}</body>
     </html>
   );

@@ -235,6 +235,7 @@ export function IndustrySolutionsSection({
       {/* .section_color, variant "gradient" */}
       <div
         aria-hidden="true"
+        data-brand-gradient=""
         className="absolute inset-0 -z-[3] h-full w-full bg-[linear-gradient(45deg,#0f41f3_16%,#289dd0)]"
       />
     </section>

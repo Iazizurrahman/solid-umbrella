@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ThemeToggle } from "@/components/sites/daita/daita-site/ThemeToggle";
 import { CONTACT, CTA } from "@/components/sites/daita/shared/brand";
 import { ArrowUpRightIcon } from "@/components/sites/daita/shared/icons";
 import { HeaderButton } from "@/components/sites/daita/daita-site/HeaderDropdowns";
@@ -121,11 +122,13 @@ export function MobileMenu({ open }: { open: boolean }) {
           ))}
         </nav>
 
-        {/* .mobile-menu_cta-wrap */}
-        <div className="flex flex-col border-t border-[#ffffff14] px-8 py-4 backdrop-blur-[80px]">
+        {/* .mobile-menu_cta-wrap — the theme toggle is hidden from the header bar
+            below 992, so this is where it lives at mobile widths. */}
+        <div className="flex flex-col gap-4 border-t border-ns-content-primary/8 px-8 py-4 backdrop-blur-[80px]">
           <a href={CTA.href}>
             <HeaderButton label={CTA.label} variant="glass" />
           </a>
+          <ThemeToggle className="self-start" />
         </div>
       </div>
     </div>

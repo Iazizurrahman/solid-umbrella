@@ -381,6 +381,7 @@ export function PlatformStackSection({
                 <canvas
                   ref={setCanvasRef}
                   aria-hidden="true"
+                  data-rive=""
                   className="ml-[-15%] block h-full min-h-[640px] w-[140%]"
                 />
 

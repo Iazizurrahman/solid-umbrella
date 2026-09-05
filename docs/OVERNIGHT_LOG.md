@@ -188,3 +188,84 @@ Standing constraints for the whole run:
 - `sitemap.ts` and `robots.ts` hardcode `https://www.daitalabs.com`, matching the
   `metadataBase` already in `layout.tsx`. If the production host differs, both need
   changing.
+
+## Phase 4 — Sand theme toggle
+
+**Shipped**
+
+- `globals.css` gains a `:root[data-theme="sand"]` block that redefines **only** the raw
+  `--ns-*` values. The `@theme inline` mapping, every spacing token, the type scale and
+  every transition are untouched, so no component changed shape.
+- `layout.tsx` loads Cormorant Garamond, IBM Plex Sans and IBM Plex Mono, and carries an
+  inline bootstrap script that applies the stored theme before first paint.
+- `ThemeToggle.tsx` in the header (≥992) and in the mobile menu (<992). Persists to
+  `localStorage["daita-theme"]`. Dark is the default: no attribute means dark.
+
+**How the fonts switch without touching a component**
+
+Under `[data-theme="sand"]` the stylesheet re-points `--font-dm-sans` at
+`--font-plex-sans` and `--font-dm-mono` at `--font-plex-mono`. Every `font-sans` and
+`font-mono` utility follows. Cormorant is applied by one theme-scoped rule on
+`h1, h2, h3`. `:root[data-theme="sand"]` is specificity (0,2,0) against next/font's
+class (0,1,0), so the override wins.
+
+**Palette**
+
+| | Dark | Sand |
+|---|---|---|
+| background primary | `#0c0c0e` | `#e9e1d1` (sand) |
+| background secondary | `#161618` | `#f4f3ef` (sand-2) |
+| content primary | `#ffffff` | `#101010` (ink) |
+| content tertiary | `#ffffff80` | `#5c5648` (muted) |
+| border secondary | `#ffffff1a` | `#10101024` |
+
+Where dark layers white at an alpha, sand layers ink at the same alpha, so the surface
+hierarchy keeps its exact structure. The one deliberate departure is
+`--ns-border-secondary`: ink at 10% is too faint on sand, so it takes the Sand bundle's
+own `--line: rgba(16,16,16,.14)`.
+
+**What broke, and what I did about it**
+
+1. **The three brand-gradient panels** (hero, who it's for, integrations) are hardcoded
+   `linear-gradient(45deg, #0f41f3 16%, #289dd0)` — they are the brand, not a token. Ink
+   type on that blue was unreadable. *Fixed:* tagged them `data-brand-gradient` and the
+   sand theme restates the same 45°/16° gradient in sand. **This is a design decision
+   someone should confirm** — it means the warm theme has no blue panels at all.
+2. **The Rive artboard** is white line-art with a blue highlight, authored for a dark
+   ground. On sand it was all but invisible. *Stopgap:* `invert(1) hue-rotate(180deg)`
+   on the canvas, which flips lightness and returns the hue roughly to source. It reads
+   well, but the real fix is a light artboard.
+3. **Integration logos** are forced white by `brightness(0) invert(1)`. White on sand is
+   nothing. *Fixed:* `data-mono-logo` + a sand rule that drops the inversion, so they
+   render ink.
+4. **Hardcoded whites in four components** — `#ffffff33`, `#ffffff1a`, `#ffffff14`,
+   `#ffffff1f`/`#ffffff0f`, and three `bg-white` hamburger rules. *Fixed:* swapped for
+   the tokens they already equalled, or for `ns-content-primary/12` and `/6` where the
+   integration pills' 12%/6% spec has no matching token.
+
+**What still breaks, unfixed**
+
+- **The section films.** Five dark stock films play inside the "why DAITA" cards and the
+  hero. They read as dark rectangles on sand — not broken, but the warm theme wants warm
+  footage. Needs new media, not code.
+- **The footer wordmark** stays sans (IBM Plex under sand) rather than becoming
+  Cormorant. It is a brand mark rendered as SVG text, not a heading. Arguably correct;
+  flagging it because it is the one large display element that does not turn serif.
+- **Cormorant is much lighter than DM Sans at the same size tokens.** Headings read
+  smaller and more delicate. That is the Sand bundle's own intent and no size token was
+  changed, but it is a visible character shift, not a like-for-like swap.
+- **The DAITA logo mark** is a dark mark. It was previously reported as nearly invisible
+  on the dark header; on sand it is finally correct. The asset is right for one theme and
+  wrong for the other — a light cut is still needed.
+
+**Verified**
+
+- Default is dark on a fresh profile; toggling writes `sand` to localStorage; a hard
+  navigation to `/platform` comes back sand with no flash; toggling back restores
+  `rgb(12,12,14)`.
+- Contrast survey across the homepage in sand: **0** text nodes below 3:1 against their
+  own background.
+- All five TNA states stay distinguishable on sand — green-tinted complete, 5% ink on
+  track, warm amber due soon, red overdue, dashed No POC — with the glyphs unchanged.
+- Tamil and Devanagari still resolve to Noto under sand.
+- `npm run check` clean.
