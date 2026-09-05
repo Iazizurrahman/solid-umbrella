@@ -134,3 +134,57 @@ Standing constraints for the whole run:
 - Tamil and Devanagari resolve to the Noto faces; Latin stays in DM Sans.
 - Stack section 1565px → 1685px, both columns equal at 1188px. No horizontal overflow.
 - `npm run check` clean.
+
+## Phase 3 — Hero variant test
+
+**Shipped**
+
+- `HomeComposition.tsx` — the whole homepage, hero included, with the hero taking
+  overrides. `src/app/page.tsx` is now four lines and renders it with no overrides.
+- `/hero-a`, `/hero-b`, `/hero-c` — each renders `HomeComposition` with one changed
+  headline plus the switcher.
+- `HeroVariantSwitcher.tsx` — fixed bottom-right, labelled "Hero test", three links with
+  `aria-current="page"` on the active one and the variant's rationale in each link's
+  accessible name.
+- `src/app/robots.ts` and `src/app/sitemap.ts`.
+
+**The three**
+
+| | Headline | Eyebrow |
+|---|---|---|
+| A | Coordinator | AI Textile Supply Chain |
+| B | Your production floor is instrumented. Your order desk isn't. | AI Textile Supply Chain |
+| C | Coordinating garment production | AI Textile Supply Chain |
+
+**Decisions**
+
+- *Only the h1 varies.* The brief names an eyebrow for A only, which is the eyebrow the
+  site already ships. I read that as "A is the control" rather than "B and C lose their
+  eyebrow", so eyebrow, subtitle, both CTAs and the hero film are held constant. A test
+  that moves two variables measures neither.
+- *Below the fold is shared, not copied.* One composition component, four routes. A
+  section added to the homepage later cannot silently miss the variants.
+- *Switcher is bottom-right.* Bottom-left is where the old floating badge sat and was
+  removed from; reusing that corner would read as its return.
+- *Three layers of exclusion.* `noindex, nofollow` in each route's metadata, absent from
+  `sitemap.ts`, and `Disallow:` in `robots.txt`. A shared link should not put a second
+  copy of the homepage in the index.
+
+**Verified**
+
+- Page height identical across `/`, `/hero-a`, `/hero-b`, `/hero-c` (8454px at 1440) —
+  below the fold really is the same.
+- Hero height stays 900px on all three, so B's three-line headline changes nothing but
+  the headline.
+- Switcher present on the three variants, absent on `/`; `robots` meta present on the
+  three, absent on `/`.
+- `robots.txt` and `sitemap.xml` both render correctly; the sitemap lists four URLs and
+  no variant.
+- `npm run check` clean; the build now emits 10 routes including `/robots.txt` and
+  `/sitemap.xml`.
+
+**Needs review**
+
+- `sitemap.ts` and `robots.ts` hardcode `https://www.daitalabs.com`, matching the
+  `metadataBase` already in `layout.tsx`. If the production host differs, both need
+  changing.
