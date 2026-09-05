@@ -269,3 +269,55 @@ own `--line: rgba(16,16,16,.14)`.
   track, warm amber due soon, red overdue, dashed No POC — with the glyphs unchanged.
 - Tamil and Devanagari still resolve to Noto under sand.
 - `npm run check` clean.
+
+## Phase 5 — Timeline moved to the homepage, scroll-pinned
+
+**Shipped**
+
+- `TimelineSection` removed from `/our-story` and added to the homepage as
+  `<Anchor id="order-trail">`, between the platform stack and the "why DAITA" pillars.
+  Nothing linked to the old `#timeline` anchor, so no link map change was needed.
+- `TimelineSection` rewritten as a client component with the pin.
+- `shared/useMediaQuery.ts` — a `useSyncExternalStore` media-query hook.
+
+**How the pin works**
+
+A tall wrapper (`100vh + 4 × 65vh = 360vh`) holds a `position: sticky; top: 0` panel. The
+panel holds still for the wrapper's whole length while the page scrolls past; a
+rAF-throttled scroll read turns the distance travelled into a 0–1 progress value, which
+fills the rail and picks the active stop. Five stops over four viewport-heights of
+travel — one stop per scroll step. **No library.** GSAP is not a dependency of this
+project and `position: sticky` plus one scroll listener does the whole job.
+
+**Two static fallbacks**
+
+- `prefers-reduced-motion: reduce` — no pin, no progressive reveal, every stop lit.
+- Below 768px — same. A panel taller than a phone viewport cannot stick, and a
+  four-viewport scroll hijack on a phone is hostile.
+
+Both render exactly the markup the animated build renders at its final step, so there is
+no second layout to keep in sync. The server and first client render assume the static
+build, so that is what hydrates and the pin is added after.
+
+**Decisions**
+
+- *Cumulative lighting, not a spotlight.* Stops stay lit once passed, with the current
+  one emphasised. The point of the section is that a handoff trail accumulates.
+- *A visible step counter.* "Stop 3 of 5", `aria-live="polite"`, plus `aria-current="step"`
+  on the active row. Without it the pin is invisible to anyone not watching the animation.
+- *The rail is `aria-hidden`.* It duplicates information already carried by
+  `aria-current` and the counter.
+
+**Verified**
+
+- At 1440 with motion on: wrapper 3240px, panel `position: sticky` holding at `top: 0`
+  through the whole scroll, rail 0% → 99%, counter Stop 1 → Stop 5, active row advancing
+  02 APR → 04 → 07 → 11 → 28 APR.
+- Reduced motion at 1440: section 688px, no sticky, all five rows at opacity 1.
+- 767 and 479 with motion on: identical static build, no horizontal overflow.
+- `npm run check` clean.
+
+**Note on the harness** — headless Chrome reports `prefers-reduced-motion: reduce` by
+default and ignores `--force-prefers-reduced-motion`. The CDP harness now sets it
+explicitly with `Emulation.setEmulatedMedia`. Worth knowing: the first pin test looked
+broken and was in fact the reduced-motion fallback working.

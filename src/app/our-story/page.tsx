@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/sites/daita/daita-site/SiteHeader";
 import { HeroSection } from "@/components/sites/daita/daita-site/HeroSection";
 import { InfrastructureSection } from "@/components/sites/daita/daita-site/InfrastructureSection";
-import { TimelineSection } from "@/components/sites/daita/daita-site/TimelineSection";
 import { CtaSection } from "@/components/sites/daita/daita-site/CtaSection";
 import { SiteFooter } from "@/components/sites/daita/daita-site/SiteFooter";
 import { Container, SectionSeparator } from "@/components/sites/daita/shared/layout";
@@ -171,11 +170,6 @@ export default function OurStoryPage() {
 
         <Anchor id="join-us">
           <JoinUsBlock />
-        </Anchor>
-        <SectionSeparator />
-
-        <Anchor id="timeline">
-          <TimelineSection />
         </Anchor>
         <SectionSeparator />
 

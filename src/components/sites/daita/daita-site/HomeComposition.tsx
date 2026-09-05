@@ -5,6 +5,7 @@ import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNew
 import { PlatformStackSection } from "@/components/sites/daita/daita-site/PlatformStackSection";
 import { PlatformStackMobileSection } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
 import { InfrastructureSection } from "@/components/sites/daita/daita-site/InfrastructureSection";
+import { TimelineSection } from "@/components/sites/daita/daita-site/TimelineSection";
 import { TrustedLogosSection } from "@/components/sites/daita/daita-site/TrustedLogosSection";
 import { TestimonialsSection } from "@/components/sites/daita/daita-site/TestimonialsSection";
 import { IndustrySolutionsSection } from "@/components/sites/daita/daita-site/IndustrySolutionsSection";
@@ -58,6 +59,13 @@ export function HomeComposition({ hero, children }: HomeCompositionProps = {}) {
           <PlatformStackSection />
           <SectionSeparator />
           <PlatformStackMobileSection />
+        </Anchor>
+        <SectionSeparator />
+
+        {/* Moved here from /our-story: the trail reads as the problem statement the
+            pillars then answer, so it belongs between the stack and "why DAITA". */}
+        <Anchor id="order-trail">
+          <TimelineSection />
         </Anchor>
         <SectionSeparator />
 
