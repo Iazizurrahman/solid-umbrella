@@ -11,7 +11,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const PAGE = 'https://www.nscale.com/';
-const OUT = 'public/sites/www-nscale-com-782295e3/root-8a5edab2';
+const OUT = 'public/sites/daita';
 
 // Rive animation files are referenced only from the JS bundle, not the HTML.
 const EXTRA = [
@@ -32,11 +32,32 @@ const extOf = (u) => (u.split('?')[0].match(/\.([a-z0-9]+)$/i)?.[1] || '').toLow
 // Webflow emits `name-p-500.png` style variants; we only want the source image.
 const isVariant = (u) => /-p-\d+\.[a-z0-9]+(\?|$)/i.test(u);
 
+/**
+ * Ten files were given clean names once the site stopped being a clone: the source
+ * brand token and Webflow's CDN hash were dropped. Keyed by the CDN basename so a
+ * re-run reproduces the tree the app actually references — without this map the
+ * script would re-create the old names alongside the renamed files.
+ * Mirrors the seven constants in src/components/sites/daita/shared/brand.ts.
+ */
+const RENAMED = {
+  'nscale-homepage-animation-web-v4-vp9-chrome.webm': 'hero-animation-vp9-chrome.webm',
+  'nscale-homepage-animation-web-v4-hevc-safari.mp4': 'hero-animation-hevc-safari.mp4',
+  '6a72243af8c76e6552945a54_6a71c8fd5f921f9d8e0f5fb4_nscale-stack_v2.riv': 'platform-stack.riv',
+  '6a6b6885cb465698dd023543_nscale-stack_v2_no-cursor.riv': 'platform-stack-no-cursor.riv',
+  '6a722dbde41c53471bf40caa_stack-2.0-nscale-cloud-png.png': 'stack-layer-cloud.png',
+  '6a722ddacc2f903fd22c5cd0_stack-2.0-nscale-metal-png.png': 'stack-layer-metal.png',
+  '6a722e3924f1f0e6fac27d9f_stack-2.0-nscale-data.png': 'stack-layer-data.png',
+  '6a722e5e5485394b6d893f59_stack-2.0-nscale-power-energy-png.png': 'stack-layer-power-energy.png',
+  '6a7b8fa971988ad21dbcd7bc_6a69e15f1b842864f4314c0c_socials_-nscale-10-.png': 'social-card.png',
+  'nscale-og.png': 'og-image.png',
+};
+
 function localName(url) {
   let base = decodeURIComponent(url.split('?')[0].split('/').pop() || 'asset');
   // Webflow prefixes a 24-char hex id; keep it short but unique.
   base = base.replace(/%20|\s+/g, '-').replace(/[^\w.-]/g, '-').replace(/-+/g, '-');
-  return base.toLowerCase();
+  base = base.toLowerCase();
+  return RENAMED[base] ?? base;
 }
 
 async function collect() {

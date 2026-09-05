@@ -41,13 +41,13 @@ export const ASSETS = {
  *
  * Every photographic / video / animation slot on the site points here. These are the
  * original production assets that shipped with the build, restored from source
- * control and served from their original directory.
+ * control, renamed and flattened under /sites/daita/.
  *
  * They are placeholders for DAITA's own footage: swap a value here and the slot
  * changes everywhere it is used. Only the paths live in this file — no component
  * hardcodes one.
  * ------------------------------------------------------------------------- */
-const MEDIA_ROOT = "/sites/www-nscale-com-782295e3/root-8a5edab2";
+const MEDIA_ROOT = "/sites/daita";
 
 /** One looping card video: two codecs plus a poster frame. */
 export interface MediaVideo {
@@ -68,8 +68,8 @@ export const MEDIA = {
    * 22MB VP9 build, and only Safari falls through to the 65MB HEVC one. Reversing the
    * order is a large, silent regression.
    */
-  heroVideoWebm: `${MEDIA_ROOT}/videos/nscale-homepage-animation-web-v4-vp9-chrome.webm`,
-  heroVideoMp4: `${MEDIA_ROOT}/videos/nscale-homepage-animation-web-v4-hevc-safari.mp4`,
+  heroVideoWebm: `${MEDIA_ROOT}/videos/hero-animation-vp9-chrome.webm`,
+  heroVideoMp4: `${MEDIA_ROOT}/videos/hero-animation-hevc-safari.mp4`,
 
   /** Five looping videos behind the pillar cards, in card order. */
   sectionVideos: [
@@ -89,14 +89,14 @@ export const MEDIA = {
    * artboard "Artboard", state machine "LayerController".
    * Its four layer keys are fixed by the file: cloud / infrastructure / dc / energy.
    */
-  riveStack: `${MEDIA_ROOT}/rive/6a72243af8c76e6552945a54_6a71c8fd5f921f9d8e0f5fb4_nscale-stack_v2.riv`,
+  riveStack: `${MEDIA_ROOT}/rive/platform-stack.riv`,
 
   /** Per-layer stills for the mobile stack carousel, in the same order as the Rive layers. */
   stackLayers: [
-    `${MEDIA_ROOT}/images/6a722dbde41c53471bf40caa_stack-2.0-nscale-cloud-png.png`,
-    `${MEDIA_ROOT}/images/6a722ddacc2f903fd22c5cd0_stack-2.0-nscale-metal-png.png`,
-    `${MEDIA_ROOT}/images/6a722e3924f1f0e6fac27d9f_stack-2.0-nscale-data.png`,
-    `${MEDIA_ROOT}/images/6a722e5e5485394b6d893f59_stack-2.0-nscale-power-energy-png.png`,
+    `${MEDIA_ROOT}/images/stack-layer-cloud.png`,
+    `${MEDIA_ROOT}/images/stack-layer-metal.png`,
+    `${MEDIA_ROOT}/images/stack-layer-data.png`,
+    `${MEDIA_ROOT}/images/stack-layer-power-energy.png`,
   ] as readonly string[],
 
   /** Two "who it's for" card images. */
