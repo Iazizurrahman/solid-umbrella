@@ -6,6 +6,7 @@ import { PlatformStackSection } from "@/components/sites/daita/daita-site/Platfo
 import { PlatformStackMobileSection } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
 import { TnaProvider } from "@/components/sites/daita/daita-site/TnaProvider";
 import { TnaEngineSection } from "@/components/sites/daita/daita-site/TnaEngineSection";
+import { WhatsAppSimulatorSection } from "@/components/sites/daita/daita-site/WhatsAppSimulator";
 import { GuidelinesSection } from "@/components/sites/daita/daita-site/GuidelinesSection";
 import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNewsSection";
 import { TrustedLogosSection } from "@/components/sites/daita/daita-site/TrustedLogosSection";
@@ -331,9 +332,15 @@ export default function PlatformPage() {
 
         {/* The TNA Engine, playable. One provider wraps it so a later addition on this
             page can drive the same grid rather than keeping a second copy of the data. */}
+        {/* One provider around both: confirming a reply in the simulator closes the
+            stage in the grid above it rather than the two telling different stories. */}
         <TnaProvider>
           <Anchor id="tna-engine">
             <TnaEngineSection />
+          </Anchor>
+          <SectionSeparator />
+          <Anchor id="whatsapp-agent">
+            <WhatsAppSimulatorSection />
           </Anchor>
         </TnaProvider>
         <SectionSeparator />

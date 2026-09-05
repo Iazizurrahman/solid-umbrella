@@ -397,6 +397,10 @@ export function PlatformStackSection({
                     <div
                       key={id}
                       aria-hidden={activeIndex !== index}
+                      /* One of these panels is interactive now, so hiding it from
+                         assistive tech is not enough: `inert` also takes it out of the
+                         tab order and out of hit-testing while it is faded out. */
+                      inert={activeIndex !== index}
                       className={cn(
                         "col-start-1 row-start-1 transition-all duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)]",
                         activeIndex === index

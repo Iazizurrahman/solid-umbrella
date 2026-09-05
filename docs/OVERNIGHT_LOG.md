@@ -77,3 +77,60 @@ Standing constraints for the whole run:
 **Needs review**
 
 - The POC names are invented. If any collides with a real person at DAITA, swap them.
+
+## Phase 2 — WhatsApp agent simulator
+
+**Shipped**
+
+- `WhatsAppSimulator.tsx` — the phone frame and the five-turn exchange, plus
+  `WhatsAppSimulatorSection` for `/platform`.
+- The platform stack's **chase** card now renders the simulator instead of the static
+  nudge timeline (`ChasePanel` is kept and still exported as the static fallback).
+- `/platform` gets `<Anchor id="whatsapp-agent">` immediately after the TNA grid,
+  inside the same `TnaProvider`.
+- `shared/typography.ts` — the Indic-capable family stack, extracted from
+  `TrustedLogosSection` so both places share one definition.
+
+**The flow — five turns, under the six-turn cap**
+
+1. Agent nudge, trilingual: `#4840 · Sewing was due 23 Mar and is still open. இன்று
+   எத்தனை பீஸ் தைச்சீங்க? · आज कितने पीस सिले?`
+2. Supervisor sends a quantity (prefilled with the 480 pcs outstanding, clamped 1–480).
+3. Agent reads it back and asks for Y, in Tamil and English.
+4. Supervisor replies Y.
+5. Agent confirms in Hindi and English, and the milestone closes.
+
+**Decisions**
+
+- *Which order.* `#4840 · Sewing`, Unit 3. It is overdue in the seed, so closing it
+  produces a visible +22d reflow across four downstream stages rather than a no-op.
+- *Partial reports are a real branch.* Entering less than the balance logs the quantity
+  and leaves the milestone open, with the agent saying it will ask again tomorrow. It
+  writes a change-history line but moves no dates. Making every number close the
+  milestone would have been the easier demo and the dishonest one.
+- *The stack's chase card is NOT wired to the grid, even on `/platform`.* Two
+  simulators on one page both driving one grid would let a visitor close the same stage
+  twice from two places while each frame showed a different local step. The dedicated
+  section is the one that drives the grid; the card is a self-contained demo. Belt and
+  braces, `markComplete` is now idempotent per stage, so a double close cannot
+  double-shift the plan.
+- *Trilingual because the group is.* Tamil for the sewing floor, Hindi for a migrant
+  line, English for the merchandising desk — that is the actual reason a garment WhatsApp
+  group is mixed, and it is what the Noto faces were loaded for.
+
+**Fixed while building**
+
+- The stack cross-fades its panels with `aria-hidden` + `opacity-0`. One of them is now
+  interactive, so inactive panels also get `inert` — otherwise the faded-out phone frame
+  stayed in the tab order.
+
+**Verified**
+
+- Five turns end to end; grid row `#4840` goes from `23 Mar ▲ 16d late` to
+  `23 Mar ✓ 14 Apr` with finishing/packing/shipment all +22d, and change history records
+  `WA · #4840 · Sewing closed · 480 pcs reported from Unit 3 · 4 downstream stages moved +22d`.
+- Partial path (120 pcs): logs `360 still to sew, milestone stays open`, grid unchanged.
+- "Start over" resets both the thread and the grid.
+- Tamil and Devanagari resolve to the Noto faces; Latin stays in DM Sans.
+- Stack section 1565px → 1685px, both columns equal at 1188px. No horizontal overflow.
+- `npm run check` clean.

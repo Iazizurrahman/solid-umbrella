@@ -67,18 +67,48 @@ interface CompleteAction {
   detail?: string;
 }
 
-type Action = CompleteAction | { type: "reset" };
+/** Records an update that does not close a stage, so partial progress still shows. */
+interface NoteAction {
+  type: "note";
+  poRef: string;
+  stage: StageId;
+  text: string;
+  source: TnaChange["source"];
+}
+
+type Action = CompleteAction | NoteAction | { type: "reset" };
 
 const byRef = (ref: string): PurchaseOrder | undefined => ORDERS.find((o) => o.ref === ref);
 
 function reducer(state: TnaState, action: Action): TnaState {
   if (action.type === "reset") return EMPTY;
 
+  if (action.type === "note") {
+    return {
+      ...state,
+      changes: [
+        {
+          id: state.nextId,
+          poRef: action.poRef,
+          stage: action.stage,
+          text: action.text,
+          source: action.source,
+        },
+        ...state.changes,
+      ].slice(0, 6),
+      nextId: state.nextId + 1,
+    };
+  }
+
   const order = byRef(action.poRef);
   if (!order) return state;
 
   const index = STAGES.findIndex((s) => s.id === action.stage);
   if (index < 0) return state;
+
+  // Closing a stage twice would shift the downstream dates twice. Two components can
+  // dispatch this, so the guard lives here rather than in either of them.
+  if (state.completions[action.poRef]?.[action.stage]) return state;
 
   const reflow = state.reflows[action.poRef] ?? {};
   const stage = STAGES[index];
@@ -126,6 +156,7 @@ export interface TnaApi {
   /** True once anything has been changed, so the Reset control can disable itself. */
   dirty: boolean;
   markComplete: (input: Omit<CompleteAction, "type">) => void;
+  note: (input: Omit<NoteAction, "type">) => void;
   reset: () => void;
 }
 
@@ -147,6 +178,10 @@ export function TnaProvider({ children }: { children: ReactNode }) {
     (input: Omit<CompleteAction, "type">) => dispatch({ type: "complete", ...input }),
     [],
   );
+  const note = useCallback(
+    (input: Omit<NoteAction, "type">) => dispatch({ type: "note", ...input }),
+    [],
+  );
   const reset = useCallback(() => dispatch({ type: "reset" }), []);
 
   const value = useMemo<TnaApi>(
@@ -155,9 +190,10 @@ export function TnaProvider({ children }: { children: ReactNode }) {
       changes: state.changes,
       dirty: state.changes.length > 0,
       markComplete,
+      note,
       reset,
     }),
-    [rows, state.changes, markComplete, reset],
+    [rows, state.changes, markComplete, note, reset],
   );
 
   return <TnaContext.Provider value={value}>{children}</TnaContext.Provider>;

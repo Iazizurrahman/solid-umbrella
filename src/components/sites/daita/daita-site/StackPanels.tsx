@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { WhatsAppSimulator } from "./WhatsAppSimulator";
 
 /**
  * The four product-UI panels that sit beside the platform stack canvas.
@@ -262,11 +263,22 @@ export function OrdersPanel() {
   );
 }
 
+/** The chase card's slot: the same simulator, sized for the stack column. */
+function ChaseSimulatorPanel() {
+  return <WhatsAppSimulator compact />;
+}
+
 /* ── keyed to the stack cards, in card order ───────────────────────────── */
 
+/**
+ * The chase card's panel is the playable WhatsApp simulator rather than the static
+ * nudge timeline: chasing is the one thing on this page a visitor can actually be shown
+ * doing. `ChasePanel` is kept and exported — it is the static fallback, and the
+ * timeline is still the clearest picture of what the agent does unattended.
+ */
 export const STACK_PANELS = [
   { id: "capture", Panel: AgentPanel },
-  { id: "chase", Panel: ChasePanel },
+  { id: "chase", Panel: ChaseSimulatorPanel },
   { id: "slip", Panel: CalendarPanel },
   { id: "reconcile", Panel: OrdersPanel },
 ] as const;

@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/sites/daita/shared/layout";
+import { MULTILINGUAL } from "@/components/sites/daita/shared/typography";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 
 /**
@@ -243,7 +244,7 @@ export function TrustedLogosSection() {
                      face and pulls only the Indic runs from Noto. */
                   <p
                     lang="mul"
-                    className="font-[family-name:var(--font-dm-sans),var(--font-noto-tamil),var(--font-noto-devanagari)] text-[0.875rem] leading-[1.5rem] text-ns-content-secondary"
+                    className={cn(MULTILINGUAL, "text-[0.875rem] leading-[1.5rem] text-ns-content-secondary")}
                   >
                     {card.caption}
                   </p>

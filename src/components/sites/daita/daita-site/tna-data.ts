@@ -203,6 +203,29 @@ export const ORDERS: readonly PurchaseOrder[] = [
   },
 ];
 
+/* ── the order the WhatsApp simulator drives ───────────────────────────────── */
+
+/**
+ * The simulator logs a floor update against one specific stage of one specific order,
+ * so the numbers it quotes have to agree with the grid. Kept here rather than in the
+ * simulator so there is one place to change if the sample set moves.
+ *
+ * `#4840` sewing is chosen because it is overdue in the seed: closing it produces a
+ * visible reflow rather than a no-op.
+ */
+export const SIM = {
+  poRef: "#4840",
+  stage: "sewing" as StageId,
+  unit: "Unit 3" as UnitId,
+  /** Order quantity, matching `ORDERS`. */
+  total: 3000,
+  /** Pieces already sewn before this session. */
+  sewnToDate: 2520,
+} as const;
+
+/** Pieces still to sew — the input's default and its maximum. */
+export const SIM_REMAINING = SIM.total - SIM.sewnToDate;
+
 /* ── derived cell state ────────────────────────────────────────────────────── */
 
 /**
