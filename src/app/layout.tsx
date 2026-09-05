@@ -48,16 +48,23 @@ const dmMono = localFont({
  * Latin still comes from DM Sans: the caption's family list puts --font-dm-sans
  * first, and per-glyph fallback picks up Noto only for the Indic runs.
  */
+/*
+ * Not preloaded. Between them these two faces are 168 KB — half the font payload —
+ * for one caption line that sits well below the fold on one section. `display: swap`
+ * means the line paints in the fallback and swaps when the face arrives.
+ */
 const notoTamil = Noto_Sans_Tamil({
   variable: "--font-noto-tamil",
   subsets: ["tamil"],
   display: "swap",
+  preload: false,
 });
 
 const notoDevanagari = Noto_Sans_Devanagari({
   variable: "--font-noto-devanagari",
   subsets: ["devanagari"],
   display: "swap",
+  preload: false,
 });
 
 /**
@@ -69,8 +76,14 @@ const notoDevanagari = Noto_Sans_Devanagari({
  * `--font-dm-mono` at these, which switches every component that uses the `font-sans`
  * or `font-mono` utility without touching a single component. Cormorant is applied to
  * headings only, by a theme-scoped rule.
+ *
+ * `preload: false` on all three. next/font preloads by default, and preloading them
+ * put 263 KB of faces on every page load for the large majority of visitors who never
+ * leave the dark theme. They now fetch on first use — a brief swap when the theme is
+ * switched, against 263 KB saved on every other visit.
  */
 const cormorant = Cormorant_Garamond({
+  preload: false,
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -78,6 +91,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const plexSans = IBM_Plex_Sans({
+  preload: false,
   variable: "--font-plex-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -85,6 +99,7 @@ const plexSans = IBM_Plex_Sans({
 });
 
 const plexMono = IBM_Plex_Mono({
+  preload: false,
   variable: "--font-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500"],

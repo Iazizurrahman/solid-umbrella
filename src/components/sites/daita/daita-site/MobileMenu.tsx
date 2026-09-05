@@ -61,6 +61,9 @@ const GROUPS: MobileGroup[] = [
  * `Escape` is handled by `SiteHeader` (it also owns the desktop dropdowns);
  * body scroll locking lives here because it is this component's side effect.
  */
+/** The id the header's hamburger points `aria-controls` at. */
+export const MOBILE_MENU_ID = "mobile-menu";
+
 export function MobileMenu({ open }: { open: boolean }) {
   useEffect(() => {
     if (!open) return;
@@ -73,6 +76,7 @@ export function MobileMenu({ open }: { open: boolean }) {
 
   return (
     <div
+      id={MOBILE_MENU_ID}
       data-mobile-menu=""
       aria-hidden={!open}
       className={cn(

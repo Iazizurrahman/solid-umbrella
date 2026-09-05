@@ -8,11 +8,12 @@ import {
 } from "@/components/sites/daita/shared/icons";
 import { Container } from "@/components/sites/daita/shared/layout";
 import {
+  DROPDOWN_PANEL_IDS,
   HeaderButton,
   PlatformDropdown,
   ProductDropdown,
 } from "@/components/sites/daita/daita-site/HeaderDropdowns";
-import { MobileMenu } from "@/components/sites/daita/daita-site/MobileMenu";
+import { MOBILE_MENU_ID, MobileMenu } from "@/components/sites/daita/daita-site/MobileMenu";
 import { ThemeToggle } from "@/components/sites/daita/daita-site/ThemeToggle";
 import { cn } from "@/lib/utils";
 
@@ -145,11 +146,13 @@ export function SiteHeader() {
           <div className="relative flex items-center justify-between py-[1.0625rem] max-[991px]:py-2">
             {/* .header_logo-wrap */}
             <div className="flex items-center justify-start gap-14">
+              {/* p-1/-m-1 lifts a 23x20 icon link to a 31x28 hit area without
+                  shifting a pixel of layout — WCAG 2.5.8 wants 24x24. */}
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
                   Every header href is a plain <a> on purpose: most of these
                   routes do not exist in the clone and next/link would prefetch
                   404s. The logo is kept consistent with the rest. */}
-              <a href="/" aria-current="page" aria-label="DAITA home">
+              <a href="/" aria-current="page" aria-label="DAITA home" className="-m-1 p-1">
                 {/* .header_logo.is-desktop — 20px, 16px <=991, hidden <=767.
                     `h-full w-auto` reproduces the `height="100%"` the inline
                     SVG carried, so the wrapper still sets the bar height. The
@@ -192,6 +195,7 @@ export function SiteHeader() {
                         type="button"
                         aria-haspopup="true"
                         aria-expanded={open}
+                        aria-controls={DROPDOWN_PANEL_IDS[key]}
                         onClick={() =>
                           setOpenDropdown((current) =>
                             current === key ? null : key,
@@ -262,6 +266,7 @@ export function SiteHeader() {
                 data-mobile-hamburger=""
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
+                aria-controls={MOBILE_MENU_ID}
                 onClick={() => setMobileOpen((current) => !current)}
                 className="relative hidden h-4 w-4 items-center justify-center bg-transparent p-0 max-[991px]:flex"
               >

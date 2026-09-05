@@ -257,6 +257,29 @@
   html {
     @apply font-sans;
   }
+  /*
+    Orphan control. `text-wrap: pretty` pulls a word down when a paragraph would
+    otherwise end on a single short one; it does not rebalance the earlier lines, so
+    the line COUNT — and therefore every measured section height — is unchanged.
+    `balance` is deliberately not used on headings for exactly that reason: it would
+    re-break display type that was matched to the source line for line.
+  */
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+  /*
+    Card and accordion titles get `balance` as well. h1 and h2 deliberately do not:
+    they carry the source-matched display type whose line breaks were measured, and
+    balancing them would re-break every one. h3-h5 are short card titles where a
+    single orphaned word is the only failure mode.
+  */
+  h3,
+  h4,
+  h5 {
+    text-wrap: balance;
+  }
 }
 
 @layer components {

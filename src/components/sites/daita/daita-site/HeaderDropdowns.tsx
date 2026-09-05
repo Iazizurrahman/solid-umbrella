@@ -112,12 +112,20 @@ const COLUMN_TINTS = [
   "rgba(15, 23, 20, 0.8)",
 ] as const;
 
+/** Stable ids so each trigger's `aria-controls` has something to point at. */
+export const DROPDOWN_PANEL_IDS = {
+  platform: "header-dropdown-platform",
+  product: "header-dropdown-product",
+} as const;
+
 function MegaPanel({
+  id,
   heading,
   columns,
   cta,
   open,
 }: {
+  id: string;
   heading: string;
   columns: MegaColumn[];
   cta: { label: string; href: string };
@@ -125,6 +133,7 @@ function MegaPanel({
 }) {
   return (
     <div
+      id={id}
       data-dropdown=""
       className={cn(
         PANEL_BASE,
@@ -243,6 +252,7 @@ const PLATFORM_COLUMNS: MegaColumn[] = [
 export function PlatformDropdown({ open }: { open: boolean }) {
   return (
     <MegaPanel
+      id={DROPDOWN_PANEL_IDS.platform}
       open={open}
       heading="How DAITA works"
       columns={PLATFORM_COLUMNS}
@@ -337,6 +347,7 @@ const PRODUCT_COLUMNS: MegaColumn[] = [
 export function ProductDropdown({ open }: { open: boolean }) {
   return (
     <MegaPanel
+      id={DROPDOWN_PANEL_IDS.product}
       open={open}
       heading="Explore the platform"
       columns={PRODUCT_COLUMNS}

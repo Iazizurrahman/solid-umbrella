@@ -23,7 +23,9 @@ export function CtaSection() {
         <div className="flex max-w-[45rem] flex-col items-stretch justify-start gap-10 pb-10 md:items-start md:pb-0">
           {/* .text-heading-h2 / .sm-text-heading-h2-mobile */}
           <h2 className="text-ns-content-primary text-[2.5rem] leading-[3rem] font-medium md:text-[3.5rem] md:leading-[3.625rem]">
-            Stop paying the coordination tax.
+            {/* Non-breaking space: without it this heading leaves "tax." alone on
+                its own line at every width from 479 to 1440. */}
+            Stop paying the coordination tax.
           </h2>
 
           {/* Body copy — the section's column gap carries the spacing. */}

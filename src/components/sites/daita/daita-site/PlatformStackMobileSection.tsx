@@ -438,7 +438,10 @@ export function PlatformStackMobileSection({
               onTouchEnd={handleTouchEnd}
             >
               <div
-                className="flex items-start transition-transform duration-500 ease-out"
+                /* items-stretch, not items-start: the slides are siblings in one
+                   track and an uneven set makes the panel change height as it
+                   moves. The track already sizes to the tallest. */
+                className="flex items-stretch transition-transform duration-500 ease-out"
                 style={track}
               >
                 {slides.map((layer, index) => (

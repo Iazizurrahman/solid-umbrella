@@ -321,3 +321,111 @@ build, so that is what hydrates and the pin is added after.
 default and ignores `--force-prefers-reduced-motion`. The CDP harness now sets it
 explicitly with `Emulation.setEmulatedMedia`. Worth knowing: the first pin test looked
 broken and was in fact the reduced-motion fallback working.
+
+## Phase 6 — Audit
+
+Seven routes (`/`, `/platform`, `/our-story`, `/contact`, `/hero-a`, `/hero-b`,
+`/hero-c`) at 1440, 1280, 991, 767 and 479, against the **production** build.
+
+### Layout
+
+| | Before | After |
+|---|---|---|
+| Horizontal document overflow | 0 / 35 viewports | 0 / 35 |
+| Aspect-ratio drift > 3% | 0 | 0 |
+| Unequal sibling heights | 4 distinct | 3, all of them footer nav columns |
+| Distinct orphaned last words | 42 | 28 |
+
+**Unequal card heights.** Three of the four hits were the footer's `items-start` link
+columns — deliberately top-aligned lists of different lengths, not cards. The real one
+was the mobile platform carousel, whose content track was `items-start`, so slides were
+353/353/353/353/353/300 at 479. Changed to `items-stretch`; the track already sized to
+the tallest, so nothing else moved.
+
+**Orphaned words.** Fixed structurally rather than by rewriting copy:
+
+- `p, li, dd { text-wrap: pretty }` in `@layer base` — pulls a word down when a
+  paragraph would end on a single short one. It does **not** rebalance earlier lines, so
+  line counts, and therefore every measured section height, are unchanged.
+- `h3, h4, h5 { text-wrap: balance }`. **h1 and h2 deliberately excluded**: they carry
+  the source-matched display type whose breaks were measured line for line, and
+  `balance` would re-break all of them. Verified after the change that every section
+  height on `/`, `/platform` and `/our-story` is byte-identical to before.
+- One non-breaking space, in the CTA heading — "Stop paying the coordination tax."
+  stranded "tax." on its own line at every width from 479 to 1440.
+
+28 orphans remain, all in body copy, all single short trailing words ("it.", "risk",
+"to.", "is."). They are listed in the audit output. Chasing them with hard spaces would
+fix one width and break another; they are normal typographic behaviour and I left them.
+
+### Accessibility
+
+| | Before | After |
+|---|---|---|
+| Images with no `alt` | 0 | 0 |
+| Controls with no accessible name | 0 | 0 |
+| `aria-expanded` with no `aria-controls` | 3 | 0 |
+| Interactive targets under 24×24 | 2 | 0 |
+| Duplicate ids | 0 | 0 |
+| Tab stops with no visible focus ring | 0 / 71 | 0 / 71 |
+| Focusable elements inside `[inert]` | 0 | 0 |
+| Focusable but zero-size | 0 | 0 |
+
+Fixed:
+
+- The hamburger and both desktop dropdown triggers had `aria-expanded` and nothing to
+  point at. `MOBILE_MENU_ID` and `DROPDOWN_PANEL_IDS` now give each a real
+  `aria-controls`, and all 21 `aria-expanded` elements on the homepage resolve to a real
+  element.
+- The header logo link (23×20) and the footer social links (20×20) were under the 24×24
+  minimum. `p-1 -m-1` grows the hit area to 31×28 / 28×28 without moving a pixel.
+
+Checked and already correct: every one of the 71 tab stops on `/` has a visible focus
+ring; the header dropdown opens on focus, so tabbing into it is not tabbing into
+something invisible; the platform stack's inactive panels are `inert`, so the faded-out
+phone frame is out of the tab order; the TNA grid is a full APG grid (arrows, Enter,
+Escape, roving tabindex, `aria-current`, per-cell accessible names); the scroll-pinned
+timeline has a complete static fallback under `prefers-reduced-motion`.
+
+Not done, deliberately: no global `prefers-reduced-motion` kill switch for the existing
+200–500ms colour and opacity transitions. That would change motion the rebrand brief
+said to keep, and colour/opacity transitions are not a vestibular trigger. The one
+scroll-linked animation added tonight has a full static path. **Recommend** adding one
+before launch anyway.
+
+### Page weight
+
+Production build, cold cache, 1440, full-page scroll to trigger lazy media. KB.
+
+| route | non-media before | non-media after | of which Rive `.riv` | fonts | scripts | video |
+|---|---|---|---|---|---|---|
+| `/` | 3927 | 3831 | 2205 | 425.5 → 328.5 | 233.2 | ~7.8–12 MB |
+| `/platform` | 3822 | 3725 | 2192 | 425.5 → 328.5 | 225.1 | ~10–14 MB |
+| `/our-story` | 1517 | 1420 | — | 425.5 → 328.5 | 146.8 | ~8–16 MB |
+| `/contact` | 1091 | 994 | — | 425.5 → 328.5 | 146.8 | 0 |
+| `/hero-a`,`-b`,`-c` | 3958 | 3861 | 2234 | 425.5 → 328.5 | 233.2 | ~8–12 MB |
+
+The audit's own fixes cost about 1 KB of CSS. The 97 KB saving per route is the font
+change below. **Video totals are not reproducible run to run** — they load progressively
+and the measurement window cuts them at different points, which is why they are a range.
+Everything else is stable to a tenth of a kilobyte.
+
+Two findings, both acted on:
+
+- **Fonts were 425 KB on every page load, 9 files, all preloaded**, including Cormorant
+  Garamond, IBM Plex Sans and IBM Plex Mono — which the large majority of visitors, who
+  never leave the dark theme, will never see. `preload: false` on all three: 425.5 →
+  328.5 KB and 9 → 5 files fetched.
+- **Noto Sans Tamil and Noto Sans Devanagari are 168 KB between them** — over half of
+  what remains — for one caption line, below the fold, on one section. They are no longer
+  preloaded (9 → 3 preload hints), so they are off the critical path, but the bytes still
+  transfer. **Needs a decision:** subsetting the two faces to the eleven codepoints
+  actually used would take this from 168 KB to under 5 KB. `next/font` cannot express
+  that; it needs a build step or the line rendered as inline SVG.
+
+Two more worth knowing, not acted on:
+
+- **The Rive artboard is 2.2 MB**, fetched by XHR on `/`, `/platform` and the hero
+  variants — 56% of all non-media weight on those routes.
+- **Video is 8–16 MB per route.** Five section films plus the hero. It dwarfs everything
+  else on the page and is the single biggest thing anyone could do about load time.

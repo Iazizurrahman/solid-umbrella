@@ -257,7 +257,9 @@ export function SiteFooter() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={label}
-                      className="inline-block max-w-full"
+                      /* p-1/-m-1 lifts a 20x20 icon link to a 28x28 hit area
+                         without shifting a pixel — WCAG 2.5.8 wants 24x24. */
+                      className="-m-1 inline-block max-w-full p-1"
                     >
                       {/* .footer_social-icon */}
                       <div className="text-ns-content-secondary hover:text-ns-content-primary flex h-5 items-center justify-center opacity-75 transition-colors duration-200">
