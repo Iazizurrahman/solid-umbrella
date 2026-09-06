@@ -197,7 +197,10 @@ export function TrustedLogosSection() {
           {/* .section_partner-logos — the headline block keeps its centred 958px measure. */}
           <div className="mx-auto flex max-w-[958px] flex-col items-center justify-start gap-6 text-center">
             {/* .text-heading-h5-mobile */}
-            <h2 className="text-[1.5rem] font-medium leading-[2rem] text-ns-content-primary">
+            {/* text-balance: this h2 is set at the h5-mobile size and carries DAITA copy,
+                not the source-matched display type h1/h2 are excluded from balancing for.
+                Without it "run" sits alone on line two at 1440 and 1280. */}
+            <h2 className="text-[1.5rem] font-medium leading-[2rem] text-balance text-ns-content-primary">
               Works with the systems your factories already run
             </h2>
 

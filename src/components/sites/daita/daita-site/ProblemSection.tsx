@@ -66,7 +66,11 @@ export function ProblemSection() {
             {POINTS.map((point) => (
               <li key={point} className="flex">
                 <div className="flex h-full w-full max-w-full flex-col gap-4 rounded-[8px] border border-ns-border-secondary bg-ns-bg-primary p-6 transition-all duration-200 hover:border-ns-border-primary max-[767px]:p-4">
-                  <p className="text-[1.5rem] leading-[2rem] font-medium text-ns-content-primary max-[767px]:text-[1.25rem] max-[767px]:leading-[1.75rem]">
+                  {/* text-balance, not the base layer's `pretty`: these are short display
+                      statements, and "…too late to fix" stranded "fix" on its own line at
+                      four of the five widths. Balancing a two-line statement cannot change
+                      its line count. */}
+                  <p className="text-[1.5rem] leading-[2rem] font-medium text-balance text-ns-content-primary max-[767px]:text-[1.25rem] max-[767px]:leading-[1.75rem]">
                     {point}
                   </p>
                 </div>

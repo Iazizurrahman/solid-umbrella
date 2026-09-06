@@ -117,7 +117,11 @@ export function InfrastructureSection({
             </div>
 
             {/* .video-cards_list-wrap */}
-            <div className="grid grid-cols-3 gap-4 max-[767px]:flex max-[767px]:flex-col max-[767px]:gap-[0.625rem]">
+            {/* auto-rows-fr: with 5 cards in a 3-col grid the two rows size
+                independently, so row 2 came out 32px shorter than row 1. Equal rows
+                make every card in the section the same height, which is what the
+                section reads as. */}
+            <div className="grid auto-rows-fr grid-cols-3 gap-4 max-[767px]:flex max-[767px]:flex-col max-[767px]:gap-[0.625rem]">
               {cards.map((card, index) => {
                 // Card `i` shows image `i`; a card past the end of the list reuses the
                 // last one so an over-long `cards` prop can never render an empty box.
@@ -126,10 +130,22 @@ export function InfrastructureSection({
                 return (
                   <div
                     key={card.title}
-                    className="flex aspect-[400/480] w-full min-w-0 flex-col justify-start gap-4 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-4"
+                    /*
+                      `h-full`, not `aspect-[400/480]`. The fixed aspect sized the card
+                      from its width and left the media box to absorb whatever the copy
+                      did not use — so images came out 298-330px in the same row, and on
+                      /our-story at 767 the copy exceeded the aspect entirely and the six
+                      cards ran 278-410px. Stretching to the grid row instead makes the
+                      cards equal by construction and the aspect now lives on the media
+                      box, so the photographs match too.
+                    */
+                    className="flex h-full w-full min-w-0 flex-col justify-start gap-4 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-4"
                   >
-                    {/* .video-card_video — same box, a still instead of a film. */}
-                    <div className="relative z-[2] block w-full flex-1 overflow-hidden rounded-[6px] text-white max-[991px]:min-h-0">
+                    {/* .video-card_video — same box, a still instead of a film. The
+                        6:5 ratio is what the old 400/480 card left for media once its
+                        padding, gap and copy were taken out, so the images keep the
+                        proportion they had. */}
+                    <div className="relative z-[2] block aspect-[6/5] w-full shrink-0 overflow-hidden rounded-[6px] text-white">
                       {/* eslint-disable-next-line @next/next/no-img-element -- fills a
                           fixed-aspect box with object-cover; next/image's wrapper would
                           fight the absolute positioning the source box relies on. */}

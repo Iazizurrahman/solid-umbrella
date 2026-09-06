@@ -317,3 +317,107 @@ All five states use tokens that already existed. Confirmed the raw values resolv
 token was added for this.
 
 Also confirmed in the Sand theme during Phase 3 — all five states stay distinguishable.
+
+---
+
+## Phase 7 — Audit
+
+Four routes × five widths × **both themes** = 40 views, against the production build.
+
+| | before | after |
+|---|---|---|
+| Horizontal overflow | 0 / 40 | **0 / 40** |
+| Aspect-ratio drift > 3% | 0 | **0** |
+| Unequal card rows | 6 distinct | **1**, and it is correct by design |
+| Distinct orphaned last words | 34 | **32** |
+| Tab stops with no visible focus ring | 0 | 0 |
+| Controls with no accessible name | 0 | 0 |
+| `aria-expanded` without a resolving `aria-controls` | 0 | 0 |
+| Interactive targets under 24×24 | 0 | 0 |
+| Duplicate ids | 0 | 0 |
+
+### Fixed — card heights
+
+`InfrastructureSection`'s card carried `aspect-[400/480]`, which sized it from its width
+and left the media box to absorb whatever the copy did not use. Two symptoms:
+
+- On the homepage the five cards were equal but their **photographs ran 298–330px**.
+- On `/our-story` at 767 the six beats' copy exceeded the aspect entirely and the
+  **cards ran 278–410px**, a 132px spread.
+
+Three changes, all component-level:
+
+1. Card `aspect-[400/480]` → `h-full`, so it stretches to its grid row.
+2. The aspect moved to the media box as `aspect-[6/5]` + `shrink-0` — the proportion the
+   old 400/480 card left for media once padding, gap and copy were taken out.
+3. `auto-rows-fr` on the grid, so a 3+2 layout does not give row 2 a different height
+   from row 1.
+
+Result: homepage 5 × **487px**, `/our-story` 6 × **575px**, every photograph **305px**,
+all spreads **0**. `/our-story` grew 1204 → 1569px at 767, which is the copy finally
+being allowed the room it always needed.
+
+The one remaining "unequal" row is the footer's two columns (`items-start`, 197 vs
+237px). Top-aligned lists of different lengths — correct.
+
+### Fixed — orphans
+
+Two display-type orphans, both `text-balance` on the specific element rather than a rule
+change:
+
+- The four problem-section statements — "…too late to fix" stranded **"fix"** at four of
+  the five widths.
+- The integrations `h2` — "…factories already run" stranded **"run"** at 1440 and 1280.
+  Safe to balance: it is set at the h5-mobile size and carries DAITA copy, not the
+  source-matched display type h1/h2 are excluded for.
+
+32 body-copy orphans remain, all single short trailing words in `<p>`. The base layer's
+`text-wrap: pretty` already takes the ones with slack; the rest would need hard spaces
+that fix one width and break another. Left alone, listed in the audit output.
+
+### Accessibility — everything new
+
+- **Keyboard**: 71 / 73 / 58 / 66 tab stops on `/`, `/platform`, `/our-story`,
+  `/contact`. **Every one has a visible focus ring.** Nothing focusable inside `[inert]`,
+  nothing focusable but zero-size.
+- **aria-expanded / aria-controls**: 21 on `/`, 68 on `/platform`, 3 on `/contact`, and
+  **every one resolves to a real element**.
+- **Alt text**: the five pillar photographs and both industry tabs now carry real
+  descriptions (they were decorative video posters before). The two brand marks in the
+  lockup are `aria-hidden` with empty alt — the word beside them is the accessible name.
+- **Reduced motion**: with `prefers-reduced-motion: reduce` the pinned order trail
+  collapses to 688px, `position: static`, all five stops at opacity 1. With motion on it
+  is 3240px, `sticky`, opacities 1 / 0.4 / 0.4 / 0.4 / 0.4.
+- **TNA Engine**: arrows move, Enter opens, Escape closes and restores focus (Phase 6).
+
+### Page weight
+
+Production build, cold cache, 1440, full-page scroll. KB.
+
+| route | total | non-media | images | fonts | scripts | requests |
+|---|---|---|---|---|---|---|
+| `/` | **5,101** | 5,101 | 2,245 | 353 | 233 | 50 |
+| `/platform` | **5,018** | 5,018 | 2,176 | 353 | 225 | 43 |
+| `/our-story` | **2,545** | 2,545 | 2,160 | 184 | 147 | 23 |
+| `/contact` | **951** | 951 | 568 | 184 | 147 | 17 |
+
+Against the same measurement taken at the start of this run:
+
+| route | before | after | change |
+|---|---|---|---|
+| `/` | 11,652 | 5,101 | **−6.5 MB** |
+| `/platform` | 17,962 | 5,018 | **−12.9 MB** |
+| `/our-story` | 9,241 | 2,545 | **−6.7 MB** |
+| `/contact` | 994 | 951 | −43 KB |
+
+Almost all of it is Phase 1: five looping films at 1.5–7 MB each, replaced by ten
+photographs totalling 2.9 MB on disk.
+
+**Two caveats on these numbers.**
+
+1. The hero film is **not** in them. It streams as ranged requests that the harness does
+   not reliably attribute, and it reported 7.8–16 MB across earlier runs and 0 here.
+   Measured directly it is **22.4 MB** (VP9) on `/` and the hero variants, plus a 65 MB
+   HEVC build Safari takes instead. It is now by far the largest thing on the site.
+2. The **Rive artboard is 2.2 MB** on `/` and `/platform`, fetched by XHR — about 44% of
+   what those routes now transfer, and the biggest remaining non-video item.
