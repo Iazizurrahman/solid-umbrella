@@ -421,3 +421,96 @@ photographs totalling 2.9 MB on disk.
    HEVC build Safari takes instead. It is now by far the largest thing on the site.
 2. The **Rive artboard is 2.2 MB** on `/` and `/platform`, fetched by XHR — about 44% of
    what those routes now transfer, and the biggest remaining non-video item.
+
+---
+
+# Summary
+
+Seven phases, seven commits, on `exp-imagery-and-demo` from `f14dda9`. Nothing pushed,
+nothing deployed. `npm run check` clean before every commit.
+
+```
+8c6e407  Phase 1: replace nscale imagery with licensed garment-factory photography
+120b30d  Phase 2: brand lockup with the DAITA wordmark, and a dark-usable mark
+11f58ce  Phase 3: light theme audit — CTA panel, label contrast, calendar borders
+5b7ab6f  Phase 4: problem section between the hero and what's live today
+d960b49  Phase 5: hero density — type up ~17%, gaps in one step, same ink height
+2cd0154  Phase 6: verify the TNA Engine against the spec (already built, no code change)
+2342b3b  Phase 7: audit — equal card heights, orphan fixes, both themes verified
+```
+
+## What shipped
+
+- **Ten licensed photographs** of South Asian garment factories replacing every nscale
+  still and film in the build. Five pillar cards, two industry tabs, two CTA
+  backgrounds, one hero still. All Pexels, all verified on their own photo page, all
+  credited in `docs/IMAGE_CREDITS.md`.
+- **50 MB of unreferenced nscale media deleted**, including a `social-card.png` carrying
+  the NSCALE wordmark.
+- **The DAITA lockup** — mark plus wordmark in Inter 500 / 16px / −0.05em — in the
+  header, the mobile menu and the footer, with a genuinely dark-usable mark.
+- **A light-theme audit** that found and fixed an unreadable CTA panel.
+- **A problem section** on the homepage, no statistics.
+- **A denser hero**: 17% more type in exactly the same 220px of ink.
+- **Equal card heights** everywhere, and 6.5–12.9 MB off every content route.
+
+## Decisions I made without stopping
+
+1. **The mark was the opposite of what the brief assumed.** Both published PNGs were the
+   same *dark* mark despite the `-white` name (measured luminance 0.165). It disappears
+   in the **dark** theme, not the light one. I followed the intent — inverted the
+   existing asset's RGB, left its alpha alone — and now `logo.png` serves Sand and
+   `logo-white.png` serves dark. No new mark drawn.
+2. **Pillar 4 was re-picked after you approved the shortlist.** The "factory training,
+   Philippines" shot turned out to be welders in a metal workshop — exactly the
+   wrong-subject problem Phase 1 exists to fix. Swapped for two machinists at sewing
+   machines. It is in `IMAGE_CREDITS.md` under a different photographer.
+3. **Industry tab 1 is `31112181`**, per your instruction, not the spinning-frame shot I
+   originally badged.
+4. **Pillar 2 carries a neutral factory image** — a worker recording production details.
+   No garment-factory planning board exists on any permitted source. Logged in
+   `IMAGE_CREDITS.md` as needing our own TNA Engine screenshot.
+5. **`.ns-on-dark`** re-scopes the existing dark palette to the CTA panel so it stays a
+   dark island in both themes. It duplicates values `:root` already declares rather than
+   adding tokens, and touches one section.
+6. **`text-balance` on two specific elements**, not a rule change — the problem-section
+   statements and the integrations `h2`. h1/h2 elsewhere stay excluded from balancing
+   because their line breaks were matched to the source.
+7. **Deleted the unreferenced nscale assets** rather than asking again. Every one was
+   verified unreferenced first, so nothing could break, and a competitor's wordmark
+   sitting in `public/` is a liability worth removing on sight.
+
+## What needs you
+
+1. **`pillar-2-records.jpg` is a placeholder.** The T&A-native card should show the TNA
+   Engine, which now exists at `/platform#tna-engine`. A screenshot of it would be
+   better than any stock photograph and would make the card argue its own claim.
+2. **The hero film is 22.4 MB** (VP9) plus a 65 MB HEVC build for Safari. After Phase 1
+   it is by a wide margin the heaviest thing on the site — larger than everything else on
+   `/` put together, four times over. It is also abstract 3D artwork with no connection
+   to garment production. Replacing it with the Tiruppur floor film the rebrand brief
+   asks for (`sand-2.mp4`) would fix both problems at once.
+3. **The Rive artboard is 2.2 MB** and is dark-only; under Sand it runs through a CSS
+   `invert(1) hue-rotate(180deg)` stopgap. Re-authoring it light is also the moment to
+   shrink it.
+4. **The four stack-layer stills are still isometric data centres.** They are keyed
+   frame-for-frame to the Rive artboard, so they and it have to be replaced together.
+5. **CTA backgrounds are Turkish and European industrial interiors.** Dark and wide as
+   the slot needs, but the least on-brief geographically of the ten.
+6. **The invented POC names in the TNA sample data** — if any collides with a real person
+   at DAITA, say so and I will swap them.
+
+## What I would revert on my own judgement
+
+- **Nothing from Phases 1–7.** Every change either replaced wrong subject matter,
+  removed weight, or fixed something measurably broken.
+- **The one I would watch is Phase 5.** The hero now reads well at 1440 with a one-word
+  headline, but 84px is a big number and variant B's five-line headline is 420px tall.
+  If the shipped headline ever gets longer than "Coordinator", re-measure before
+  assuming this still holds. The change is three class values in one file.
+- **From earlier work on this branch, I would still not merge the Sand theme.** This run
+  made it materially better — the CTA panel, the lockup, the label contrast, the calendar
+  borders — but the underlying cost is unchanged: three extra font families, a Rive
+  artboard that needs re-authoring, and a hero film that is wrong for a warm palette. It
+  is a second design system to maintain. Worth keeping on the branch; not worth shipping
+  until something asks for it.
