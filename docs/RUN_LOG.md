@@ -237,3 +237,45 @@ Section 748px, all four cards exactly 114px, order confirmed
 hero → the-problem → latest-news → platform, no horizontal overflow, and the only digits
 in the whole section are the "400 m" and "four days" that the brief's own body copy
 contains.
+
+---
+
+## Phase 5 — Hero density
+
+Kept. The one-word h1 now has presence, the sub-line is legible at arm's length, and the
+copy block reads as one object rather than three floating lines.
+
+### Before → after (1440)
+
+| | before | after | change |
+|---|---|---|---|
+| h1 size / leading | 72 / 72px | **84 / 84px** | +16.7% |
+| h1 tracking | −2.16px | −2.52px | −0.03em, unchanged as a ratio |
+| h1 mobile (≤767) | 40 / 40px | **46 / 46px** | +15% |
+| sub size / leading | 16 / 24px | **18 / 28px** | +12.5% / +16.7% |
+| sub measure | 25rem | 28rem | widened so the line count does not grow |
+| `.hero-content_copy` gap | 24px | **20px** | −1 step |
+| `.hero-content` gap | 32px (24 mobile) | **24px (20)** | −1 step |
+| `.hero-split_content` gap | 40px | **32px** | −1 step |
+| copy block height | 156px | 164px | +8px for 17% more type |
+| copy → buttons | 32px | 24px | −8px |
+| eyebrow → buttons, total ink | 220px | **220px** | unchanged |
+
+The last row is the point: the type grew ~17% and the block occupies **exactly the same
+220px** it did before, because the three gaps came in by the same amount the type grew.
+Section height is still 900px (`min-h-[100vh]`), the eyebrow still sits at y=329 and the
+buttons still start at y=505 — nothing outside the hero moved.
+
+### Judgement calls
+
+- **Leading stays locked to the size** (1.0 for the h1), as the source had it, so the
+  headline block scales rather than opening up.
+- **The sub's measure widened 25rem → 28rem.** At 18px in a 400px measure the subtitle
+  would have taken a second line; the wider measure keeps it on one.
+- **Hero-variant B checked.** Its five-line headline is 420px tall at 84px and still
+  clears the fold — total ink 556px in a 900px section, buttons at y=673.
+- No global spacing or type token was touched. Every value above is a class on the hero.
+
+### Verified
+
+No horizontal overflow at 1440 / 1280 / 991 / 767 / 479 on the longest headline variant.

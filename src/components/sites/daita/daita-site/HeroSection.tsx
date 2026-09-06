@@ -148,23 +148,33 @@ export function HeroSection({
             {/* .section_hero-split */}
             <div className="flex items-center justify-between gap-12 max-md:flex-col">
               {/* .hero-split_content */}
-              <div className="flex w-full flex-col gap-10">
+              {/*
+                DENSITY PASS. The hero was a one-word h1 in a slot sized for a longer
+                headline, so the copy read as a small island in a lot of air. The type
+                went up ~17% and the three vertical gaps came in one step each. These are
+                the hero's own values: no global spacing or type token is touched, and
+                nothing outside this section moves.
+                  .hero-split_content  40 -> 32
+                  .hero-content        32 -> 24  (mobile 24 -> 20)
+                  .hero-content_copy   24 -> 20
+              */}
+              <div className="flex w-full flex-col gap-8">
                 {/* .hero-content */}
-                <div className="flex max-w-[37.75rem] flex-col gap-8 max-md:max-w-none max-md:gap-6">
+                <div className="flex max-w-[37.75rem] flex-col gap-6 max-md:max-w-none max-md:gap-5">
                   {/* .hero-content_copy */}
-                  <div className="flex max-w-[37.75rem] flex-col gap-6">
+                  <div className="flex max-w-[37.75rem] flex-col gap-5">
                     {/* Eyebrow — `.text-nav-label-tiny`: 10px/12px, 600, uppercase,
                         --content--tertiary. Same treatment as the header dropdown
                         and mobile-menu group labels; the column gap does the spacing. */}
                     <p className="text-[0.625rem] leading-3 font-semibold text-ns-content-tertiary uppercase">
                       {eyebrow}
                     </p>
-                    <h1 className="text-[4.5rem] leading-[4.5rem] font-medium tracking-[-0.03em] text-ns-content-primary max-md:text-[2.5rem] max-md:leading-[2.5rem]">
+                    <h1 className="text-[5.25rem] leading-[5.25rem] font-medium tracking-[-0.03em] text-ns-content-primary max-md:text-[2.875rem] max-md:leading-[2.875rem]">
                       {title}
                     </h1>
                     {/* .hero-content_desc */}
-                    <div className="max-w-[25rem] text-ns-content-secondary max-md:max-w-none">
-                      <p className="text-base leading-6">{subtitle}</p>
+                    <div className="max-w-[28rem] text-ns-content-secondary max-md:max-w-none">
+                      <p className="text-[1.125rem] leading-[1.75rem]">{subtitle}</p>
                     </div>
                   </div>
 
