@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/sites/daita/daita-site/SiteHeader";
 import { HeroSection, type HeroSectionProps } from "@/components/sites/daita/daita-site/HeroSection";
+import { ProblemSection } from "@/components/sites/daita/daita-site/ProblemSection";
 import { LatestNewsSection } from "@/components/sites/daita/daita-site/LatestNewsSection";
 import { PlatformStackSection } from "@/components/sites/daita/daita-site/PlatformStackSection";
 import { PlatformStackMobileSection } from "@/components/sites/daita/daita-site/PlatformStackMobileSection";
@@ -48,6 +49,12 @@ export function HomeComposition({ hero, children }: HomeCompositionProps = {}) {
 
       <main className="relative">
         <HeroSection {...hero} />
+        <SectionSeparator />
+
+        {/* The problem, before anything is claimed about the product. */}
+        <Anchor id="the-problem">
+          <ProblemSection />
+        </Anchor>
         <SectionSeparator />
 
         <Anchor id="latest-news">

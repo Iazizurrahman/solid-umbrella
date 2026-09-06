@@ -204,3 +204,36 @@ After the CTA fix the script still reports its white text as failing, because `b
 composites background **colours** and the CTA's ground is a photograph — it falls back to
 the page colour. The screenshot is the authority here and it is correct. Any future run
 of this audit should expect those three CTA lines as known false positives.
+
+---
+
+## Phase 4 — Problem section
+
+`ProblemSection.tsx`, wired into `HomeComposition` as `<Anchor id="the-problem">`
+between the hero and "What's live today". It therefore appears on `/` and, because the
+three hero-variant routes render the same composition, on those too — which is what keeps
+the variant test honest.
+
+Heading and body verbatim from the brief. Four supporting points, no statistics anywhere:
+each point is a description of the work, which is the only kind of claim available
+without a source.
+
+### Judgement calls
+
+- **Two columns, not four.** `LatestNewsSection` runs its cards four across; four of
+  these across gives each statement a ~280px measure and breaks every one onto four
+  lines. `grid-cols-2` is the `IndustrySolutionsSection` grid, already in the system, and
+  gives each statement one or two lines.
+- **The points are set at the card-title size** (1.5rem/2rem medium, 1.25rem/1.75rem at
+  ≤767px) rather than body size. They are statements, not descriptions — the `.blog-card`
+  h3 treatment is the closest existing role.
+- **No new visual pattern.** Section shell, spacers and `SectionLines` from
+  `InfrastructureSection`; heading block from `LatestNewsSection`; cards are `.blog-card`
+  verbatim including the 200ms border-hover.
+
+### Verified
+
+Section 748px, all four cards exactly 114px, order confirmed
+hero → the-problem → latest-news → platform, no horizontal overflow, and the only digits
+in the whole section are the "400 m" and "four days" that the brief's own body copy
+contains.
