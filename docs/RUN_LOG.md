@@ -279,3 +279,41 @@ buttons still start at y=505 — nothing outside the hero moved.
 ### Verified
 
 No horizontal overflow at 1440 / 1280 / 991 / 767 / 479 on the longest headline variant.
+
+---
+
+## Phase 6 — TNA Engine demo on /platform
+
+**Already built.** The TNA Engine shipped on this branch in an earlier run
+(`39e9095`, `eaf2715`) and lives at `/platform#tna-engine`. Rather than rebuild it, I
+verified it line by line against this phase's spec. Everything asked for is present; no
+code changed.
+
+| Spec | Result |
+|---|---|
+| 6 POs | `#4821 #4834 #4840 #4852 #4907 #5033` |
+| 8 stages, in order | SAMPLING · FABRIC SOURCING · CUTTING · SEWING · QUALITY CHECK · FINISHING · PACKING · SHIPMENT (48 cells) |
+| Realistic garment data | Crew tee 180 GSM 4,800 · Fleece hoodie 320 GSM 2,200 · Denim jogger 340 GSM 3,000 · Rib knit polo 220 GSM 1,650 · Jersey midi dress 160 GSM 2,750 · Twill cargo short 260 GSM 3,400 |
+| Dates across one season | 28 Jan – 19 May 2026, frozen "as of" 14 Apr |
+| Planned / actual / delta per stage | yes, all three in the cell and again in the detail panel |
+| **on track** | `bg-glass-secondary` + `border-secondary`, glyph `·` — 14 cells |
+| **due soon** | `bg-glass-orange` + `border-hover`, glyph `!` — 5 cells |
+| **overdue** | `destructive` at 15% / 50%, glyph `▲` — 7 cells |
+| **complete** | `bg-glass-green` + `border-secondary`, glyph `✓` — 19 cells |
+| **No POC** | dashed `border-primary`, glyph `?` — 3 cells |
+| Cell detail on click | PLANNED · ACTUAL · DELTA · PAST DUE · STATE · OWNER · APPROVAL — e.g. `#4840 · Sewing`, 23 Mar, not yet reported, +6d projected, 16 days past due, Overdue, L. Chitra, Auto-logged from WhatsApp |
+| Mark complete + reflow | `#4840 Sewing` 23 Mar ▲ 16d late → ✓ 14 Apr, and QC/FIN/PACK/SHIP all move +22d; change history records it |
+| Filter by unit | All / Unit 1 / Unit 2 / Unit 3 — Unit 2 gives `#4834`, `#4907` |
+| Group by unit | UNIT 1 → #4821 #4852, UNIT 2 → #4834 #4907, UNIT 3 → #4840 #5033 |
+| Saved-view selector | All open orders · At risk this week · Unowned stages · By unit |
+| Row hover highlights the PO | row header goes `rgba(255,255,255,0.05)` → `0.1` and gains a `0.4` border |
+| Labelled as sample data | a "SAMPLE DATA" pill plus "Fictional purchase orders, styles, quantities and names, frozen at 14 Apr 2026. Not a customer, not a case study, not a claim." |
+| Arrows move | start `#4821 Sampling` → →→↓ → `#4834 Cutting` |
+| Enter opens | opens `#4834 · Cutting`, `aria-expanded="true"` on that one cell |
+| Escape closes | panel returns to its empty state and focus goes back to the cell that opened it |
+
+All five states use tokens that already existed. Confirmed the raw values resolve to
+`--ns-background-glass-green`, `--ns-background-glass-orange` and `--destructive`; no
+token was added for this.
+
+Also confirmed in the Sand theme during Phase 3 — all five states stay distinguishable.
