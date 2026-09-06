@@ -15,7 +15,7 @@ function SectionPadding() {
 /** The closing call-to-action directly above the footer. */
 export function CtaSection() {
   return (
-    <section className="relative isolate">
+    <section className="ns-on-dark relative isolate">
       <SectionPadding />
 
       <Container>

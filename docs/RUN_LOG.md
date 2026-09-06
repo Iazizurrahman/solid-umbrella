@@ -155,3 +155,52 @@ largest place the mark is painted (the 28px footer lockup), and keeps the file a
 Inter 500, 16px, `-0.8px` tracking (= −0.05em at 16px), mark 20×23, gap 7px, vertical
 centre offset 0. Dark theme shows `logo-white.png`; Sand shows `logo.png`. `npm run
 check` clean.
+
+---
+
+## Phase 3 — Light theme audit
+
+Walked `/`, `/platform`, `/our-story` and `/contact` in the Sand theme with a script that
+composites every translucent layer to get each text node's real background, then measures
+WCAG contrast; plus checks for near-white text on light grounds, borders that composite to
+their own fill, the Rive canvas filter and every video's blend mode.
+
+### Broken, and fixed
+
+1. **The closing CTA was unreadable.** Ink type on a dark industrial photograph — heading
+   at 1.3:1, body at 1.27:1, fine print at 1.14:1. The panel is a full-bleed photograph;
+   under the dark theme the page and the photograph agree, under Sand the page went warm
+   and the photograph did not.
+   *Fix:* a new `.ns-on-dark` class re-scopes the **existing** dark palette to that one
+   panel — the same values `:root` already declares, no token added, global scale
+   untouched. The CTA now reads as the dark island it has always been, in both themes.
+   Verified by screenshot: white heading, white body, inverted button.
+2. **`PO` column header in the orders panel, 4.37:1 against 4.5 required.** Tertiary ink
+   on a 10% ink wash inside an already-tinted card. Moved to `content-secondary`.
+   *Caught a second bug fixing it:* the override was placed before `LABEL` in `cn()`, and
+   `LABEL` carries `text-ns-content-tertiary`, so tailwind-merge kept the tertiary. Order
+   matters; the override now follows `LABEL`.
+3. **Calendar day cells lost their edges.** The "plan" cells' `border-secondary`
+   composites to their own 10% fill. Moved to `border-primary`.
+
+### Checked and already correct
+
+- **Rive canvas** — carries `invert(1) hue-rotate(180deg)` under Sand, so the white
+  line-art reads as ink. Confirmed present at 862×640.
+- **Integration logos** — the `brightness(0) invert(1)` monochrome filter drops its
+  inversion under Sand, so the marks render ink rather than disappearing.
+- **Hero video** — `mix-blend-luminosity` on the wrapper, which desaturates against the
+  warm gradient rather than fighting it.
+- **The new photography** — every pillar card and both industry tabs read well on sand;
+  the cards' own glass fill separates them from the page.
+- **TNA Engine** — all five states stay distinguishable on sand: green complete, neutral
+  on track, amber due soon, red overdue, dashed No POC.
+- Zero near-white text on light grounds anywhere outside the CTA panel.
+- `/our-story` and `/contact`: no findings at all.
+
+### Detector limitation, logged not fixed
+
+After the CTA fix the script still reports its white text as failing, because `bgOf()`
+composites background **colours** and the CTA's ground is a photograph — it falls back to
+the page colour. The screenshot is the authority here and it is correct. Any future run
+of this audit should expect those three CTA lines as known false positives.

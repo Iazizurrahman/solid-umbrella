@@ -239,6 +239,35 @@
   filter: invert(1) hue-rotate(180deg);
 }
 /*
+  A panel that is dark in BOTH themes.
+  The closing CTA is a full-bleed photograph with type over it. In the dark theme the
+  page and the photograph agree; under Sand the page went warm but the photograph did
+  not, so ink type landed on a dark industrial interior and vanished.
+
+  This re-scopes the existing dark palette to that one panel rather than inventing
+  anything: the values below are the same ones `:root` declares for the dark theme. No
+  token is added and the global scale is untouched — the panel simply keeps reading as
+  the dark island it has always been.
+*/
+.ns-on-dark {
+  --ns-background-primary: #0c0c0e;
+  --ns-background-secondary: #161618;
+  --ns-background-inverse: #ffffff;
+  --ns-background-glass-primary: #ffffff1a;
+  --ns-background-glass-secondary: #ffffff0d;
+
+  --ns-content-primary: #ffffff;
+  --ns-content-secondary: #ffffffe6;
+  --ns-content-tertiary: #ffffff80;
+  --ns-content-inverse: #0c0c0e;
+
+  --ns-border-primary: #ffffff33;
+  --ns-border-secondary: #ffffff1a;
+  --ns-border-hover: #ffffff66;
+  --ns-border-glass-primary: #ffffff1a;
+  --ns-border-glass-secondary: #ffffff0d;
+}
+/*
   The brand lockup ships both ink weights of the same mark and lets the stylesheet pick.
   Doing it in CSS rather than JavaScript means the server render is already correct and
   there is no flash when the theme is restored before paint.

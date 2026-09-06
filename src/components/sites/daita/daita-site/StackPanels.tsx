@@ -179,7 +179,10 @@ export function CalendarPanel() {
               className={cn(
                 "aspect-square rounded-[4px] border p-[0.3125rem] font-mono text-[0.625rem] leading-3",
                 !d.tone && "border-ns-border-secondary bg-ns-bg-glass-secondary text-ns-content-tertiary",
-                d.tone === "plan" && "border-ns-border-secondary bg-ns-bg-glass-primary text-ns-content-secondary",
+                // border-primary, not secondary: against this cell's own 10% wash the
+                // secondary border composites to the fill colour and the grid loses its
+                // cell edges entirely.
+                d.tone === "plan" && "border-ns-border-primary bg-ns-bg-glass-primary text-ns-content-secondary",
                 // Sand uses red here; this system has no status colour, so the
                 // late days carry the strongest border and weight instead.
                 d.tone === "late" && "border-ns-border-hover bg-ns-bg-glass-primary font-semibold text-ns-content-primary",
@@ -215,7 +218,12 @@ export function OrdersPanel() {
   return (
     <Panel title="Open purchase orders" meta="14 OPEN · 3 AT RISK · 1 OVERDUE">
       <div className="overflow-hidden rounded-[6px] border border-ns-border-secondary bg-ns-bg-glass-secondary">
-        <div className={cn(COLS, "bg-ns-bg-glass-primary px-3 py-[0.5625rem]", LABEL)}>
+        {/*
+          `text-ns-content-secondary`, not the tertiary the other labels use: this row
+          sits on a 10% ink wash inside an already-tinted card, and tertiary measured
+          4.37:1 against it under the Sand theme — just under AA for 10px type.
+        */}
+        <div className={cn(COLS, "bg-ns-bg-glass-primary px-3 py-[0.5625rem]", LABEL, "text-ns-content-secondary")}>
           <span>PO</span>
           <span>Style</span>
           <span>Qty</span>
