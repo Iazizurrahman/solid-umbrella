@@ -238,6 +238,20 @@
 :root[data-theme="sand"] canvas[data-rive] {
   filter: invert(1) hue-rotate(180deg);
 }
+/*
+  The brand lockup ships both ink weights of the same mark and lets the stylesheet pick.
+  Doing it in CSS rather than JavaScript means the server render is already correct and
+  there is no flash when the theme is restored before paint.
+*/
+[data-mark="on-light"] {
+  display: none;
+}
+:root[data-theme="sand"] [data-mark="on-dark"] {
+  display: none;
+}
+:root[data-theme="sand"] [data-mark="on-light"] {
+  display: block;
+}
 :root[data-theme="sand"] [data-mono-logo] {
   filter: brightness(0);
 }

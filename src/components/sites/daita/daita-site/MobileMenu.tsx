@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { ThemeToggle } from "@/components/sites/daita/daita-site/ThemeToggle";
+import { BrandLockup } from "@/components/sites/daita/shared/BrandLockup";
 import { CONTACT, CTA } from "@/components/sites/daita/shared/brand";
 import { ArrowUpRightIcon } from "@/components/sites/daita/shared/icons";
 import { HeaderButton } from "@/components/sites/daita/daita-site/HeaderDropdowns";
@@ -88,6 +89,12 @@ export function MobileMenu({ open }: { open: boolean }) {
       <div className="flex h-full flex-col">
         {/* .header-spacer — height: var(--header-height) */}
         <div className="h-[var(--ns-header-height,50px)] shrink-0" />
+
+        {/* The lockup again at the head of the panel: the header bar sits above the
+            overlay, so without this the open menu carries no brand at all. */}
+        <div className="shrink-0 px-8 pt-6">
+          <BrandLockup markHeight={20} />
+        </div>
 
         {/* .mobile-menu_nav */}
         <nav className="flex flex-1 flex-col gap-8 overflow-auto px-8 pt-6 pb-8">

@@ -1,5 +1,4 @@
 import {
-  ASSETS,
   CONTACT,
   COPYRIGHT,
   CTA,
@@ -10,6 +9,7 @@ import {
   LinkedInIcon,
 } from "@/components/sites/daita/shared/icons";
 import { Container } from "@/components/sites/daita/shared/layout";
+import { BrandLockup } from "@/components/sites/daita/shared/BrandLockup";
 import type { FooterLink } from "@/types/daita";
 
 /**
@@ -184,11 +184,12 @@ export function SiteFooter() {
         <div className="flex items-start justify-between gap-18 pt-10 pb-30 max-[991px]:flex-col max-[991px]:gap-10 max-[767px]:pb-10">
           {/* .footer_form-col */}
           <div className="flex flex-col gap-18">
-            {/* .footer_logo */}
-            <div className="flex w-full max-w-[256px] items-center justify-center max-[991px]:hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element -- brand lockup
-                  ships as a static SVG; next/image would add no optimisation. */}
-              <img src={ASSETS.logoWhite} alt="DAITA" className="w-full" />
+            {/* .footer_logo — the small lockup. The slot was a 256px-wide bare mark;
+                it now carries the wordmark too, at the same 28px mark height the
+                header uses one step up, left-aligned rather than centred so the word
+                reads with the tagline below it. */}
+            <div className="flex w-full max-w-[256px] items-center max-[991px]:hidden">
+              <BrandLockup markHeight={28} />
             </div>
 
             {/* .footer_form-content */}

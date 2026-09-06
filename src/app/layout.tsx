@@ -3,6 +3,7 @@ import {
   Cormorant_Garamond,
   IBM_Plex_Mono,
   IBM_Plex_Sans,
+  Inter,
   Noto_Sans_Devanagari,
   Noto_Sans_Tamil,
 } from "next/font/google";
@@ -65,6 +66,19 @@ const notoDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
   display: "swap",
   preload: false,
+});
+
+/**
+ * Inter, medium only, for one string: the "DAITA" wordmark in the header, mobile menu
+ * and footer lockups. daitalabs.com sets the word as live type in Inter 500 / 16px /
+ * -0.05em, and matching it is the difference between the lockup reading as DAITA's and
+ * reading as a restyled clone. One weight, latin subset — about 15 KB.
+ */
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["500"],
+  display: "swap",
 });
 
 /**
@@ -161,6 +175,7 @@ export default function RootLayout({
         dmMono.variable,
         notoTamil.variable,
         notoDevanagari.variable,
+        inter.variable,
         cormorant.variable,
         plexSans.variable,
         plexMono.variable,

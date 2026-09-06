@@ -99,3 +99,59 @@ Ten photographs in `public/images/daita/stock/`, 2.9 MB total, credited in
   left alone as a record of provenance.
 - What remains under `public/sites/daita/`: the hero film, the Rive artboard and its four
   stack-layer stills. All still in use and out of scope for this phase.
+
+---
+
+## Phase 2 — Header lockup
+
+### Shipped
+
+- `shared/BrandLockup.tsx` — the mark plus the word DAITA in **Inter 500 / 16px /
+  −0.05em**, vertically centred, gap 7px. Used in `SiteHeader` (20px mark ≥992, 16px
+  below), `MobileMenu` (20px, new — the header bar sits above the overlay, so the open
+  menu previously carried no brand at all) and the small `SiteFooter` lockup (28px).
+- `layout.tsx` — Inter, weight 500, latin subset, ~15 KB, for that one string.
+- `public/images/daita/logo-white.png` regenerated.
+
+### The mark was the opposite of what the brief assumed
+
+Measured both published PNGs by rendering and averaging their non-transparent pixels:
+
+| file | mean ink | luminance | reads as |
+|---|---|---|---|
+| `logo.png` (before) | rgb(40,43,44) | 0.165 | dark ink |
+| `logo-white.png` (before) | rgb(40,43,44) | 0.165 | dark ink — **identical file** |
+
+Both shipped files were the same **dark** mark, despite the `-white` name. So the mark
+does not disappear in the light theme; it disappears in the **dark** one, which is the
+theme the site ships by default.
+
+Following the intent rather than the letter: `logo-white.png` is now that same artwork
+with its **RGB channels inverted and its alpha untouched** — a mechanical inversion of
+the existing asset, no new mark drawn, silhouette identical. Result:
+
+| file | mean ink | luminance | used on |
+|---|---|---|---|
+| `logo.png` | rgb(40,43,44) | 0.165 | Sand theme |
+| `logo-white.png` | rgb(215,212,211) | 0.834 | dark theme |
+
+Re-exported at 600px wide rather than the source's 1900px — that is still 15× the
+largest place the mark is painted (the 28px footer lockup), and keeps the file at 70 KB.
+
+### Judgement calls
+
+- **The swap is CSS, not JavaScript.** Both marks render and `[data-theme]` hides the
+  wrong one. The server render is therefore already correct and there is no flash when
+  the stored theme is applied before paint.
+- **The marks are `aria-hidden` with empty alt.** The lockup's accessible name comes from
+  the word beside them and from the header link's own `aria-label`; three "DAITA"s in a
+  row for a screen reader would be noise.
+- **The footer lockup is left-aligned**, where the bare mark had been centred in its
+  256px slot — with a word attached, centring left it floating away from the tagline
+  beneath it.
+
+### Verified
+
+Inter 500, 16px, `-0.8px` tracking (= −0.05em at 16px), mark 20×23, gap 7px, vertical
+centre offset 0. Dark theme shows `logo-white.png`; Sand shows `logo.png`. `npm run
+check` clean.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ASSETS, CTA } from "@/components/sites/daita/shared/brand";
+import { CTA } from "@/components/sites/daita/shared/brand";
 import {
   ChevronDownIcon,
   DashedRuleIcon,
@@ -15,6 +15,7 @@ import {
 } from "@/components/sites/daita/daita-site/HeaderDropdowns";
 import { MOBILE_MENU_ID, MobileMenu } from "@/components/sites/daita/daita-site/MobileMenu";
 import { ThemeToggle } from "@/components/sites/daita/daita-site/ThemeToggle";
+import { BrandLockup } from "@/components/sites/daita/shared/BrandLockup";
 import { cn } from "@/lib/utils";
 
 /**
@@ -153,20 +154,10 @@ export function SiteHeader() {
                   routes do not exist in the clone and next/link would prefetch
                   404s. The logo is kept consistent with the rest. */}
               <a href="/" aria-current="page" aria-label="DAITA home" className="-m-1 p-1">
-                {/* .header_logo.is-desktop — 20px, 16px <=991, hidden <=767.
-                    `h-full w-auto` reproduces the `height="100%"` the inline
-                    SVG carried, so the wrapper still sets the bar height. The
-                    brand mark is a fixed-size SVG, so it stays a plain <img>
-                    rather than going through the next/image loader. */}
-                <div className="flex h-5 items-center justify-center text-ns-content-primary max-[991px]:h-4 max-[767px]:hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={ASSETS.logoWhite} alt="DAITA" className="h-full w-auto" />
-                </div>
-                {/* .header_logo.is-mobile — the compact mark, only <=767 */}
-                <div className="hidden h-5 items-center justify-center text-ns-content-primary max-[767px]:flex max-[767px]:h-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={ASSETS.logo} alt="DAITA" className="h-full w-auto" />
-                </div>
+                {/* .header_logo.is-desktop — mark at 20px, 16px <=991. The wordmark
+                    beside it is live type, matching daitalabs.com; see BrandLockup. */}
+                <BrandLockup markHeight={20} className="max-[991px]:hidden" />
+                <BrandLockup markHeight={16} className="hidden max-[991px]:flex" />
               </a>
 
               {/* .header_nav — hidden at <=991 */}
