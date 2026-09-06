@@ -1,4 +1,4 @@
-import { MEDIA, type MediaVideo } from "@/components/sites/daita/shared/brand";
+import { MEDIA, type MediaImage } from "@/components/sites/daita/shared/brand";
 import { Container } from "@/components/sites/daita/shared/layout";
 import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
 
@@ -6,10 +6,13 @@ import { SectionLines } from "@/components/sites/daita/shared/SectionLines";
  * `.section_video-cards` — "Built where the work happens".
  *
  * Five `.video-card`s (3 + 2 at desktop, stacked at <=767px), unchanged from the
- * source layout. Each card's media box carries its own looping, muted, autoplaying
- * background film from `MEDIA.sectionVideos`, matched to the card by position: card
- * `i` plays `MEDIA.sectionVideos[i]`. WebM is listed before mp4 on purpose — Chrome
- * and Firefox take the smaller VP9 build and only Safari falls through to the mp4.
+ * source layout. Each card's media box carries a photograph from `MEDIA.pillarImages`,
+ * matched to the card by position: card `i` shows `MEDIA.pillarImages[i]`.
+ *
+ * These were looping background films in the source. The replacements are stills: the
+ * five films were the previous owner's data-centre and construction footage, wrong for
+ * garment software, and they cost roughly 30 MB per page load. The box, its aspect
+ * ratio and `object-cover` are unchanged, so the layout is identical.
  *
  * The source kept `.video-card_desc` inside a collapsed `[data-expand]` wrapper
  * (height driven to 0 by Webflow's interaction script) so the homepage showed
@@ -68,11 +71,11 @@ export interface InfrastructureSectionProps {
   subheading?: string;
   cards?: readonly InfrastructureCard[];
   /**
-   * Background films, matched to cards by position. Defaults to the full set.
+   * Card photographs, matched to cards by position. Defaults to the full set.
    * `/platform` renders this section twice, so the second instance passes a rotated
-   * list — otherwise both would play the same three films on one page.
+   * list — otherwise both would show the same three images on one page.
    */
-  videos?: readonly MediaVideo[];
+  media?: readonly MediaImage[];
 }
 
 /** `.section_padding` — 7.5rem, 5.5rem at <=767px. */
@@ -84,7 +87,7 @@ export function InfrastructureSection({
   heading = HOMEPAGE_HEADING,
   subheading = HOMEPAGE_SUBHEADING,
   cards = HOMEPAGE_PILLARS,
-  videos = MEDIA.sectionVideos,
+  media = MEDIA.pillarImages,
 }: InfrastructureSectionProps = {}) {
   return (
     <section className="relative isolate bg-ns-bg-primary">
@@ -116,29 +119,27 @@ export function InfrastructureSection({
             {/* .video-cards_list-wrap */}
             <div className="grid grid-cols-3 gap-4 max-[767px]:flex max-[767px]:flex-col max-[767px]:gap-[0.625rem]">
               {cards.map((card, index) => {
-                // Card `i` plays film `i`; a card past the end of the list reuses the
-                // last film so an over-long `cards` prop can never render an empty box.
-                const video =
-                  videos[Math.min(index, videos.length - 1)];
+                // Card `i` shows image `i`; a card past the end of the list reuses the
+                // last one so an over-long `cards` prop can never render an empty box.
+                const image = media[Math.min(index, media.length - 1)];
 
                 return (
                   <div
                     key={card.title}
                     className="flex aspect-[400/480] w-full min-w-0 flex-col justify-start gap-4 rounded-[8px] border border-ns-border-glass-primary bg-ns-bg-glass-primary p-4"
                   >
-                    {/* .video-card_video.w-background-video */}
+                    {/* .video-card_video — same box, a still instead of a film. */}
                     <div className="relative z-[2] block w-full flex-1 overflow-hidden rounded-[6px] text-white max-[991px]:min-h-0">
-                      <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        poster={video.poster}
-                        className="absolute inset-[-100%] z-[-100] m-auto h-full w-full bg-cover bg-center object-cover"
-                      >
-                        <source src={video.webm} type="video/webm" />
-                        <source src={video.mp4} type="video/mp4" />
-                      </video>
+                      {/* eslint-disable-next-line @next/next/no-img-element -- fills a
+                          fixed-aspect box with object-cover; next/image's wrapper would
+                          fight the absolute positioning the source box relies on. */}
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
                     </div>
 
                     {/* .video-card_copy */}

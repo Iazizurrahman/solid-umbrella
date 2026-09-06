@@ -352,9 +352,9 @@ export default function PlatformPage() {
             heading="Your rules. Your AI."
             subheading="Write your production SOPs in plain English. DAITA follows them exactly, escalating, responding and prioritising the way your team already works."
             cards={RULES_POINTS}
-            // This page renders the section twice. Films are matched to cards by
-            // position, so without an offset both blocks would play the same three.
-            videos={MEDIA.sectionVideos.slice(2)}
+            // This page renders the section twice. Images are matched to cards by
+            // position, so without an offset both blocks would show the same three.
+            media={MEDIA.pillarImages.slice(2)}
           />
           <SectionSeparator />
           <GuidelinesSection />
